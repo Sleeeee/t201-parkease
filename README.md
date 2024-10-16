@@ -3,4 +3,4 @@ Cours de Développement informatique II - X. DUBRUILLE & V. Van Den Schrieck - O
 ## Participants
 STAS Justin - VANDERMEULEN Arnaud - YANDO FOTSO Nöel Junior
 ## Documentation
-- [Cahier des charges](https://github.com/Sleeeee/t201-parkease/docs/cahier_des_charges.md)
+- [Cahier des charges](./docs/cahier_des_charges.md)
