@@ -36,8 +36,8 @@ class ParkingOverviewFrame(MainFrame):
     """Frame used to view the parking lot occupancy"""
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        for i in self.controller.fetch_parking_data():
-            ttk.Label(self, text=i, style="Default.TLabel").pack()
+        parking_lot = self.controller.fetch_parking_data()
+        ttk.Label(self, text=str(parking_lot), style="Default.TLabel").pack()
 
 class PaymentsOverviewFrame(MainFrame):
     """Frame used to encode or review payments"""

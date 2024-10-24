@@ -14,3 +14,10 @@ class DatabaseController:
                               spot_number INTEGER NOT NULL,
                               row_number INTEGER NOT NULL,
                               floor_number INTEGER NOT NULL)""")
+            cursor.commit()
+
+    def fetch_all_parking_spots(self):
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, spot_number, row_number, floor_number FROM ParkingSpots")
+            return cursor.fetchall()
