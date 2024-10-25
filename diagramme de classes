@@ -1,0 +1,162 @@
+classDiagram
+    %% Classe principale représentant le parking avec ses étages et places
+    class Parking {
+        +int id
+        +String location
+        +List<Floor> floors
+        +List<Visitor> visitors
+        +List<Subscriber> subscribers
+        +List<Payment> payments
+        +addVehicle(vehicle: Vehicle)
+        +removeVehicle(vehicle: Vehicle)
+        +getAvailableSpaces() : int
+        +generateParkingReport() : String
+    }
+    %% La classe Parking gère les étages, les visiteurs, les abonnés, et les paiements.
+
+    %% Classe représentant un étage du parking
+    class Floor {
+        +int floorNumber
+        +List<ParkingSpace> spaces
+        +isFull() : bool
+        +getAvailableSpaces() : int
+    }
+    %% Un étage contient plusieurs places, permet de vérifier l'occupation.
+
+    %% Classe pour les places de parking
+    class ParkingSpace {
+        +String spaceId
+        +bool isOccupied
+        +Reservation reservation
+        +occupySpace()
+        +freeSpace()
+        +generateSpaceId(floorNumber: int, parkingIdentifier: String) : String
+    }
+    %% Gère l'état des places avec un identifiant unique généré pour chaque place.
+    %% Les méthodes occupySpace() et freeSpace() permettent de gérer manuellement l'occupation.
+
+    %% Classe pour les véhicules
+    class Vehicle {
+        +String licensePlate
+        +String ownerName
+        +boolean isSubscribed
+        +checkSubscription() : bool
+    }
+    %% Représente les véhicules qui entrent et sortent du parking.
+
+    %% Classe pour les abonnés
+    class Subscriber {
+        +String subscriptionId
+        +Date subscriptionStart
+        +Date subscriptionEnd
+        +Vehicle vehicle
+        +getDiscount() : float
+        +reserveParkingSpace(space: ParkingSpace)
+    }
+    %% Permet aux abonnés de réserver des places et d'obtenir des réductions.
+
+    %% Classe pour les visiteurs (non abonnés)
+    class Visitor {
+        +Vehicle vehicle
+        +Date arrivalTime
+        +makePayment(amount: float)
+    }
+    %% Les visiteurs peuvent garer leur véhicule sans abonnement.
+
+    %% Classe pour les réservations de places
+    class Reservation {
+        +Date reservationDate
+        +ParkingSpace reservedSpace
+        +Subscriber subscriber
+        +isConfirmed : bool
+    }
+    %% Permet aux abonnés de réserver des places.
+
+    %% Classe pour les paiements
+    class Payment {
+        +float amount
+        +Date paymentDate
+        +boolean isValidated
+        +generateReceipt()
+        +applyDiscount(discount : float)
+        +calculateFee(duration: float) : float
+    }
+    %% Gère les transactions liées aux paiements.
+
+    %% Classe pour les alertes
+    class Notification {
+        +String message
+        +String type
+        +DateTime timestamp
+        +showAlert()
+    }
+    %% Notifications pour signaler des anomalies (place pleine, véhicule resté trop longtemps).
+
+    %% Classe pour l'utilisateur (abstraite) avec héritage pour les rôles
+    class User {
+        <<Abstract>>
+        +String userId
+        +String username
+        +String role
+        +login()
+        +logout()
+    }
+    
+    %% Classe Manager héritant de User
+    class Manager {
+        +generateReport()
+        +viewAllLogs()
+        +manageUsers()
+    }
+    %% Le manager a des privilèges étendus (rapports, gestion des utilisateurs).
+
+    %% Classe Employee héritant de User
+    class Employee {
+        +recordVehicleEntry(vehicle: Vehicle)
+        +recordVehicleExit(vehicle: Vehicle)
+        +managePayment(payment: Payment)
+        +confirmReservation(reservation: Reservation)
+    }
+    %% Les employés enregistrent les entrées/sorties et gèrent les paiements.
+
+    %% Interface pour la gestion du parking
+    class ParkingManagement {
+        <<interface>>
+        +addVehicle()
+        +removeVehicle()
+        +generateFinancialReport()
+        +monitorParkingStatus()
+    }
+    %% Définit les opérations pour la gestion du parking.
+
+    ParkingManagement <|.. ParkingSystem
+
+    %% Classe principale ParkingSystem implémentant ParkingManagement
+    class ParkingSystem {
+        +addVehicle()
+        +removeVehicle()
+        +generateFinancialReport()
+        +getParkingStatistics()
+        +monitorParkingStatus()
+        +alertIfParkingFull()
+    }
+    %% Implémentation du système principal pour gérer les opérations du parking.
+
+    %% Relations entre les classes
+    Parking "1" o-- "*" Floor : contient
+    Floor "1" o-- "*" ParkingSpace : contient
+    Parking "1" --> "*" Vehicle : contient
+    ParkingSpace "0..1" --> Reservation : réservé_par
+    Reservation "1" --> "1" Subscriber : concerne
+    Subscriber "1" --> "1" Vehicle : possède
+    Parking "1" --> "*" Payment : contient
+    Visitor "1" --> "1" Vehicle : possède
+    Notification "0..*" --> User : destinée_à
+    User <|-- Manager : héritage
+    User <|-- Employee : héritage
+
+    %% Styles pour les différentes classes
+    style Parking fill:#bfb,stroke:#6f6,stroke-width:2px,color:#000
+    style User fill:#bbf,stroke:#66f,stroke-width:2px,color:#000
+    style ParkingManagement fill:#ff9,stroke:#663,stroke-width:2px,color:#000
+    style Notification fill:#fbb,stroke:#f66,stroke-width:2px,color:#000
