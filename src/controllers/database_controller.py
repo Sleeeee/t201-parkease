@@ -7,6 +7,11 @@ class DatabaseController:
         self.path = os.path.join(self.directory, "parking_lot.db")
 
     def init_database(self):
+        """Initializes all the relations needed to manage the parking lot
+           ParkingSpots : Stores all existing spots with an id and their physical position
+           ParkingUsage : History of every entry/exit. If someone is occupying the spot, entry_time is the corresponding TIMESTAMP, and exit_time is NULL
+           Payments : Links payments data to the corresponding ParkingUsage"""
+
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("""CREATE TABLE ParkingSpots (
@@ -31,6 +36,9 @@ class DatabaseController:
             conn.commit()
 
     def fetch_all_parking_spots(self):
+        """Retrieves every existing spot
+           Returns : A list of lists (each spot is a 4 items long list)"""
+
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("""SELECT id, spot_number, row_number, floor_number
@@ -38,10 +46,20 @@ class DatabaseController:
             return cursor.fetchall()
 
     def fetch_last_spot_usage(self, spot_id):
-        # TODO : retrieve entry/exit times to verify status
-        pass
+        """Retrieves information concerning the current spot's usage
+           Returns : A list containing the registration plate, and the timestamps of last entry time. If exit_time is NULL, the spot is occupied, if not, it is free"""
+
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""SELECT registration_plate, entry_time, exit_time
+                              FROM ParkingUsage
+                              WHERE spot_id = ?
+                              ORDER BY entry_time DESC NULLS FIRST""", (spot_id))
+            return cursor.fetchone()
 
     def create_parking_spot(self, floor_number, row_number, spot_number):
+        """Adds a new entry to the ParkingSpots table"""
+
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("""INSERT INTO ParkingSpots (floor_number, row_number, spot_number)
@@ -49,6 +67,8 @@ class DatabaseController:
             conn.commit()
 
     def new_entry_visitor(self, spot_id, registration_plate):
+        """Adds a new entry to the ParkingUsage table. The entry time is set to the current timestamp"""
+
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("""INSERT INTO ParkingUsage (spot_id, registration_plate, entry_time)
@@ -56,10 +76,13 @@ class DatabaseController:
             conn.commit()
 
     def new_entry_booking(self, spot_id, registration_plate):
+        """Updates entry_time to a spot that was previously booked by the same client. entry_time is set to current_timestamp"""
         # WARNING : Not needed for MVP
         pass
 
     def new_exit(self, spot_id, registration_plate):
+        """Updates exit_time (set to current_timestamp) to the corresponding spot."""
+
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("""UPDATE ParkingUsage
@@ -68,12 +91,25 @@ class DatabaseController:
             conn.commit()
 
     def new_booking(self, spot_id, registration_plate):
+        """Creates a new entry to the ParkingUsage. entry_time and exit_time are set to NULL"""
         # WARNING : Not needed for MVP
-        with sqlite3.connect(self.path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("")
-            conn.commit()
+        pass
 
     def fetch_all_payments(self):
-        # TODO : fetch payments
-        pass
+        """Retrieves all rows in the Payments table
+           Returns : A list of list (each payment is a 3 items long list"""
+
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""SELECT usage_id, registration_plate, amount
+                              FROM Payments""")
+            return cursor.fetchall()
+
+    def new_payment(self, usage_id, registration_plate, amount):
+        """Creates a new entry to the Payments table"""
+
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""INSERT INTO Payments
+                              VALUES (?, ?, ?)""", (usage_id, registration_plate, amount))
+            conn.commit()
