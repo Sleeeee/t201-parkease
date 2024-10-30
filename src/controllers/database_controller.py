@@ -37,6 +37,10 @@ class DatabaseController:
                               FROM ParkingSpots""")
             return cursor.fetchall()
 
+    def fetch_last_spot_usage(self, spot_id):
+        # TODO : retrieve entry/exit times to verify status
+        pass
+
     def create_parking_spot(self, floor_number, row_number, spot_number):
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
@@ -68,4 +72,8 @@ class DatabaseController:
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("")
-            conn.commit() 
+            conn.commit()
+
+    def fetch_all_payments(self):
+        # TODO : fetch payments
+        pass
