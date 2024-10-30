@@ -122,8 +122,24 @@ class ParkingLot:
 class Car:
     HOURLY_RATE = 3.00 # Price in dollars for 1 hour of parking
 
-    def __init__(self, registration_plate, is_subscribed=False):
+    def __init__(self, registration_plate):
         self.registration_plate = registration_plate
-        self.is_subscribed = is_subscribed
-        if self.is_subscribed:
-            self.HOURLY_RATE *= 0.8
+
+class NonSubscriber(Car):
+    def __init__(self, registration_plate):
+        super().__init__(self, registration_plate)
+        self.hourly_rate = super().HOURLY_RATE
+
+    def subscribe(self):
+        pass
+
+class Subscriber(Car):
+    def __init__(self, registration_plate):
+        super().__init__(self, registration_plate)
+        self.hourly_rate = super().HOURLY_RATE * 0.8
+
+    def unsubscribe(self):
+        pass
+
+    def book_spot(self):
+        pass
