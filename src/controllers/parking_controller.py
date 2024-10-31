@@ -8,12 +8,11 @@ class ParkingController:
         self.fetch_parking_data()
 
     def fetch_parking_data(self):
-        parking_lot = ParkingLot(1)
+        self.parking_lot = ParkingLot(1)
         db = DatabaseController()
         for spot in db.fetch_all_parking_spots():
-            parking_lot.add_spot({"id": spot[0], "spot_number": spot[1], "row_number": spot[2], "floor_number": spot[3]})
+            self.parking_lot.add_spot({"id": spot[0], "spot_number": spot[1], "row_number": spot[2], "floor_number": spot[3]})
             # TODO : verify status and update it (maybe need to modify add_spot() or update it manually)
-        return parking_lot
 
     def check_spot_status(self, spot_id):
         # TODO : call to db to check if last usage entry/exit_time is NULL

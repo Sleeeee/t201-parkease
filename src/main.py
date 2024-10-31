@@ -9,7 +9,6 @@ if __name__ == "__main__":
         os.makedirs(db_controller.directory, exist_ok=True) # Ensure the directory exists
         db_controller.init_database()
 
-    db_controller.create_parking_spot(1, 20, 120)
     root = Tk()
     app = ParkEaseApp(root)
     root.mainloop()

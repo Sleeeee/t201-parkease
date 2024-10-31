@@ -34,7 +34,7 @@ class ParkingSpot:
     @status.setter
     def status(self, status):
         if status not in self.ALLOWED_STATUSES:
-            raise ValueError(f"Invalid status '{status}'. Must be one the following : {ALLOWED_STATUSES}")
+            raise ValueError(f"Invalid status '{status}'. Must be one the following : {self.ALLOWED_STATUSES}")
         self._status = status
 
     @property
