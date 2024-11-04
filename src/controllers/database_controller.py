@@ -54,7 +54,7 @@ class DatabaseController:
             cursor.execute("""SELECT registration_plate, entry_time, exit_time
                               FROM ParkingUsage
                               WHERE spot_id = ?
-                              ORDER BY entry_time DESC NULLS FIRST""", (spot_id))
+                              ORDER BY entry_time DESC NULLS FIRST""", (spot_id,))
             return cursor.fetchone()
 
     def create_parking_spot(self, floor_number, row_number, spot_number):
