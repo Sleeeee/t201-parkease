@@ -53,8 +53,8 @@ class ParkingSpot:
         self.status = "free"
         self.linked_car = None
 
-    def pay(self, time_spent):
-        assert self.status == "occupied"
+    def pay(self, registration_plate, time_spent):
+        assert (self.status == "occupied") and (registration_plate == self.linked_car.registration_plate)
         return self.linked_car.HOURLY_RATE * time_spent
 
     def book(self, client_id):

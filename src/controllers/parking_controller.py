@@ -30,26 +30,27 @@ class ParkingController:
 
     def new_entry(self, floor_number, row_number, spot_number, registration_plate):
         db = DatabaseController()
-        spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
-        
         try:
+            spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             spot.enter(registration_plate)
             db.new_entry_visitor(spot.id, registration_plate)
             return ""
         except AssertionError as e:
             return f"[Error] This spot is already occupied : {e}"
+        except KeyError as e:
+            return f"[Error] This spot does not exit : {e}"
 
     def new_exit(self, floor_number, row_number, spot_number, registration_plate):
         db = DatabaseController()
-        spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
-        
         try:
+            spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             usage_id, time_spent = db.fetch_last_usage_time(spot.id)
-            amount = spot.pay(time_spent)
+            amount = spot.pay(registration_plate, time_spent)
             db.new_payment(usage_id, registration_plate, amount)
             spot.exit(registration_plate)
             db.new_exit(spot.id, registration_plate)
             return ""
-        except AssertionError as e:
+        except (AssertionError, TypeError) as e:
             return f"[Error] This spot is unoccupied or the registration plates don't match : {e}"
-
+        except KeyError as e:
+            return f"[Error] This spot does not exist : {e}"
