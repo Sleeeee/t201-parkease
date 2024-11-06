@@ -40,18 +40,22 @@ class ParkingSpot:
     def __str__(self):
         string = f"Spot {self.spot_number} : {self.status}"
         if self.status != "free":
-            string += f" by {self.linked_car}"
+            string += f" by {self.linked_car.registration_plate}"
         return string
 
     def enter(self, registration_plate):
         assert self.status == "free"
         self.status = "occupied"
-        self.linked_car = registration_plate
+        self.linked_car = Car(registration_plate)
 
     def exit(self, registration_plate):
-        assert (self.status == "occupied") and (self.linked_car == registration_plate)
+        assert (self.status == "occupied") and (self.linked_car.registration_plate == registration_plate)
         self.status = "free"
         self.linked_car = None
+
+    def pay(self, time_spent):
+        assert self.status == "occupied"
+        return self.linked_car.HOURLY_RATE * time_spent
 
     def book(self, client_id):
         # WARNING : Not needed for MVP

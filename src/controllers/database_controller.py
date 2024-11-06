@@ -57,6 +57,16 @@ class DatabaseController:
                               ORDER BY entry_time DESC NULLS FIRST""", (spot_id,))
             return cursor.fetchone()
 
+    def fetch_last_usage_time(self, spot_id):
+        """Retrieves the amount of time the last car was parked on the spot"""
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""SELECT id, (JULIANDAY(current_timestamp) - JULIANDAY(entry_time)) * 24
+                              FROM ParkingUsage
+                              WHERE spot_id = ?
+                              ORDER BY entry_time DESC NULLS FIRST""", (spot_id,))
+            return cursor.fetchone()
+
     def create_parking_spot(self, floor_number, row_number, spot_number):
         """Adds a new entry to the ParkingSpots table"""
 

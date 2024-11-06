@@ -1,5 +1,5 @@
 from .database_controller import DatabaseController
-from models import ParkingLot
+from models import ParkingLot, Car
 
 class ParkingController:
     def __init__(self, root):
@@ -16,7 +16,7 @@ class ParkingController:
             
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             registration_plate, status = self.check_spot_status(id)
-            spot.linked_car = registration_plate
+            spot.linked_car = Car(registration_plate)
             spot.status = status
 
     def check_spot_status(self, spot_id):
@@ -37,16 +37,19 @@ class ParkingController:
             db.new_entry_visitor(spot.id, registration_plate)
             return ""
         except AssertionError as e:
-            return f"This spot is already occupied : {e}"
+            return f"[Error] This spot is already occupied : {e}"
 
     def new_exit(self, floor_number, row_number, spot_number, registration_plate):
         db = DatabaseController()
         spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
         
         try:
+            usage_id, time_spent = db.fetch_last_usage_time(spot.id)
+            amount = spot.pay(time_spent)
+            db.new_payment(usage_id, registration_plate, amount)
             spot.exit(registration_plate)
             db.new_exit(spot.id, registration_plate)
             return ""
         except AssertionError as e:
-            return f"This spot is unoccupied or the registration plates don't match : {e}"
+            return f"[Error] This spot is unoccupied or the registration plates don't match : {e}"
 
