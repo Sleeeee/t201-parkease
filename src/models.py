@@ -153,3 +153,13 @@ class Subscriber(Car):
 
     def book_spot(self):
         pass
+
+class Payment:
+    def __init__(self, usage_id, registration_plate, amount):
+        self.usage_id = usage_id
+        self.registration_plate = registration_plate
+        self.amount = amount
+
+    def __str__(self):
+        return f"#{self.usage_id} - {self.registration_plate} paid {self.amount}€"
+
