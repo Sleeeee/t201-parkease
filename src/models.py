@@ -17,7 +17,7 @@ class ParkingSpot:
         self._id = id
         self._spot_number = spot_number
         self.status = status # Forces usage of @status.setter
-        self._booking_id = booking_id # TODO implement book() method OR @booking.setter (easier to init everything at once) to maybe create a Booking object ? Needs to be created outside of the ParkingSpot.
+        self.linked_car = None
 
     @property
     def id(self):
@@ -37,14 +37,24 @@ class ParkingSpot:
             raise ValueError(f"Invalid status '{status}'. Must be one the following : {self.ALLOWED_STATUSES}")
         self._status = status
 
-    @property
-    def booking(self):
-        return self._booking
-
     def __str__(self):
-        return f"Spot {self.spot_number} : {self.status}"
+        string = f"Spot {self.spot_number} : {self.status}"
+        if self.status != "free":
+            string += f" by {self.linked_car}"
+        return string
+
+    def enter(self, registration_plate):
+        assert self.status == "free"
+        self.status = "occupied"
+        self.linked_car = registration_plate
+
+    def exit(self, registration_plate):
+        assert (self.status == "occupied") and (self.linked_car == registration_plate)
+        self.status = "free"
+        self.linked_car = None
 
     def book(self, client_id):
+        # WARNING : Not needed for MVP
         """
         Books the parking spot for the client if he is subscribed.
 
