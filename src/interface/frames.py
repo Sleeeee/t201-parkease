@@ -1,4 +1,4 @@
-from tkinter import ttk
+from tkinter import ttk, IntVar, StringVar
 from controllers import ParkingController, PaymentsController, SubscribersController, AnalyticsController
 
 class LogoFrame(ttk.Frame):
