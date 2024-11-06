@@ -33,6 +33,15 @@ class ParkingController:
         status = "occupied" if exit_time is None else "free" # If someone entered but never left, it means the spot is occupied. If the last user left, it means the spot is free
         return registration_plate, status
 
+    def create_new_spot(self, floor_number: int, row_number: int, spot_number: int):
+        db = DatabaseController()
+        try:
+            self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
+            return "[Error] This spot already exists"
+        except KeyError:
+            db.create_parking_spot(floor_number, row_number, spot_number)
+            return ""
+
     def new_entry(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str):
         """A user enters the specified spot
            Updates the spot within self.parking_lot : spot.status = "occupied", spot.linked_car = registration_plate
