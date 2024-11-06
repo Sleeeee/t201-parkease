@@ -64,7 +64,7 @@ class ParkingController:
            Updates the spot within self.parking_lot : spot.status = "free", spot.linked_car = None
            Returns an empty string is everything worked, or a string containing the error if something failed"""
         db = DatabaseController()
-        try
+        try:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             usage_id, time_spent = db.fetch_last_usage_time(spot.id) # Fetches the entry's id and calculates the time spent occupying the spot
             amount = spot.pay(registration_plate, time_spent) # Calculates the amount to be paid based on the car's HOURLY_RATE
