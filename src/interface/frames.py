@@ -38,6 +38,35 @@ class ParkingOverviewFrame(MainFrame):
         super().__init__(parent, controller)
         parking_lot = self.controller.parking_lot
         ttk.Label(self, text=str(parking_lot), style="Default.TLabel").pack()
+        floor = IntVar()
+        row = IntVar()
+        spot = IntVar()
+        plate = StringVar()
+        action = StringVar()
+
+        ttk.Label(self, text="Floor", style="Default.TLabel").pack(pady=(15,0))
+        ttk.Entry(self, textvariable=floor).pack()
+        ttk.Label(self, text='Row', style="Default.TLabel").pack()
+        ttk.Entry(self, textvariable=row).pack()
+        ttk.Label(self, text="Spot", style="Default.TLabel").pack()
+        ttk.Entry(self, textvariable=spot).pack()
+        ttk.Label(self, text="Registration Plate", style="Default.TLabel").pack()
+        ttk.Entry(self, textvariable=plate).pack()
+        ttk.Radiobutton(self, text='Enter', variable=action, value='enter').pack()
+        ttk.Radiobutton(self, text='Exit', variable=action, value='exit').pack()
+        ttk.Button(self, text='Submit', command=lambda: self.submit(int(floor.get()),int(row.get()),int(spot.get()),plate.get(),action.get())).pack()
+    
+    def submit(self,floor,row,spot,plate,action):
+        if action == "enter":
+            control = self.controller.new_entry(floor,row,spot,plate)
+            if control:
+                print(control)
+        elif action == "exit":
+            control = self.controller.new_exit(floor,row,spot,plate)
+            if control:
+                print(control)
+        else:
+            print("Please, enter an action")
 
 class PaymentsOverviewFrame(MainFrame):
     """Frame used to encode or review payments"""
