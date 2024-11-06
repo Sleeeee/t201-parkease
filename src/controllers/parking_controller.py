@@ -50,12 +50,12 @@ class ParkingController:
             # Error raised by trying to access a spot that isn't contained inside self.parking_lot
             return f"[Error] This spot does not exit : {e}"
 
-    def new_exit(self, floor_number, row_number, spot_number, registration_plate):
+    def new_exit(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str):
         """A user exits the specified spot
            Updates the spot within self.parking_lot : spot.status = "free", spot.linked_car = None
            Returns an empty string is everything worked, or a string containing the error if something failed"""
         db = DatabaseController()
-        try:
+        try
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             usage_id, time_spent = db.fetch_last_usage_time(spot.id) # Fetches the entry's id and calculates the time spent occupying the spot
             amount = spot.pay(registration_plate, time_spent) # Calculates the amount to be paid based on the car's HOURLY_RATE

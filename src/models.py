@@ -13,7 +13,7 @@ class ParkingSpot:
 
     ALLOWED_STATUSES = ["free", "occupied", "booked"] 
 
-    def __init__(self, id, spot_number, status="free", booking_id=None):
+    def __init__(self, id: int, spot_number: int, status: str = "free", booking_id: int = None):
         self._id = id
         self._spot_number = spot_number
         self.status = status # Forces usage of @status.setter
@@ -40,21 +40,24 @@ class ParkingSpot:
     def __str__(self):
         string = f"Spot {self.spot_number} : {self.status}"
         if self.status != "free":
-            string += f" by {self.linked_car.registration_plate}"
+            string += f" by {self.linked_car.registration_plate}" # Adds the registration plate if the spot is occupied or booked
         return string
 
-    def enter(self, registration_plate):
-        assert self.status == "free"
+    def enter(self, registration_plate: str):
+        """Updates status = "occupied" and linked_car = Car(registration_plate)"""
+        assert self.status == "free" # Raises an error if someone is occupying the spot
         self.status = "occupied"
         self.linked_car = Car(registration_plate)
 
-    def exit(self, registration_plate):
-        assert (self.status == "occupied") and (self.linked_car.registration_plate == registration_plate)
+    def exit(self, registration_plate: str):
+        """Updates status = "free" and linked_car = None """
+        assert (self.status == "occupied") and (self.linked_car.registration_plate == registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
         self.status = "free"
         self.linked_car = None
 
     def pay(self, registration_plate, time_spent):
-        assert (self.status == "occupied") and (registration_plate == self.linked_car.registration_plate)
+        """Returns the amount that has to be paid by the car"""
+        assert (self.status == "occupied") and (registration_plate == self.linked_car.registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
         return self.linked_car.HOURLY_RATE * time_spent
 
     def book(self, client_id):
