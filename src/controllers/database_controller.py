@@ -123,3 +123,77 @@ class DatabaseController:
             cursor.execute("""INSERT INTO Payments
                               VALUES (?, ?, ?)""", (usage_id, registration_plate, amount))
             conn.commit()
+
+    def cancel_booking(self, spot_id, registration_plate):
+        """
+        Annule une réservation pour une place spécifique dans la base de données.
+
+        Paramètres :
+            spot_id (int) : L'identifiant unique de la place de parking.
+            registration_plate (str) : La plaque d'immatriculation associée à la réservation.
+        """
+        with sqlite3.connect(self.path) as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""DELETE FROM ParkingUsage
+                                  WHERE spot_id = ? AND registration_plate = ? AND entry_time IS NULL AND exit_time IS NULL""",
+                               (spot_id, registration_plate))
+                conn.commit()
+            except sqlite3.DatabaseError as e:
+                print(f"[Error] Unable to cancel booking for spot {spot_id}: {e}")
+
+    def fetch_reserved_spots(self):
+        """
+        Récupère toutes les places de parking réservées mais non occupées.
+        Retourne :
+            list : Une liste de tuples contenant l'identifiant de la place et la plaque d'immatriculation.
+        """
+        with sqlite3.connect(self.path) as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""SELECT spot_id, registration_plate
+                                  FROM ParkingUsage
+                                  WHERE entry_time IS NULL AND exit_time IS NULL""")
+                return cursor.fetchall()
+            except sqlite3.DatabaseError as e:
+                print(f"[Error] Unable to fetch reserved spots: {e}")
+                return []
+
+    def fetch_current_parked_vehicles(self):
+        """
+        Récupère tous les véhicules actuellement garés.
+        Retourne :
+            list : Une liste de tuples contenant l'identifiant de la place et la plaque d'immatriculation des véhicules garés.
+        """
+        with sqlite3.connect(self.path) as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""SELECT spot_id, registration_plate
+                                  FROM ParkingUsage
+                                  WHERE exit_time IS NULL""")
+                return cursor.fetchall()
+            except sqlite3.DatabaseError as e:
+                print(f"[Error] Unable to fetch parked vehicles: {e}")
+                return []
+
+    def calculate_usage_duration(self, spot_id):
+        """
+        Calcule la durée d'utilisation d'une place de parking en heures.
+        Paramètres :
+            spot_id (int) : L'identifiant unique de la place de parking.
+        Retourne :
+            float : La durée d'utilisation en heures, ou None si une erreur survient.
+        """
+        with sqlite3.connect(self.path) as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""SELECT (JULIANDAY(current_timestamp) - JULIANDAY(entry_time)) * 24
+                                  FROM ParkingUsage
+                                  WHERE spot_id = ? AND exit_time IS NULL
+                                  ORDER BY entry_time DESC
+                                  LIMIT 1""", (spot_id,))
+                result = cursor.fetchone()
+                return result[0] if result else None
+            except sqlite3.DatabaseError as e:
+                print(f"[Error] Unable to calculate usage duration for spot {spot_id}: {e}")
+                return None

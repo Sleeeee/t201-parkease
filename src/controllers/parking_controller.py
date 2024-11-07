@@ -79,3 +79,111 @@ class ParkingController:
             # Error raised by trying to access a spot that isn't contained inside self.parking_lot
             return f"[Error] This spot does not exist : {e}"
 
+    def get_available_spots(self):
+        """
+        Récupère toutes les places de parking disponibles (libres).
+        Retourne :
+            list : Une liste de toutes les places de parking actuellement libres.
+        """
+        db = DatabaseController()
+        available_spots = []
+        try:
+            for spot in db.fetch_all_parking_spots():
+                if self.check_spot_status(spot[0]) == "free":
+                    available_spots.append(spot)
+        except Exception as e:
+            print(f"[Error] Unable to retrieve available spots: {e}")
+        return available_spots
+
+    def reserve_spot(self, spot_id, registration_plate):
+        """
+        Réserve une place de parking pour un utilisateur spécifique.
+        Paramètres :
+            spot_id (int) : L'identifiant unique de la place à réserver.
+            registration_plate (str) : La plaque d'immatriculation du véhicule de l'utilisateur.
+        """
+        db = DatabaseController()
+        try:
+            db.new_booking(spot_id, registration_plate)
+        except Exception as e:
+            print(f"[Error] Unable to reserve spot {spot_id} for {registration_plate}: {e}")
+
+    def cancel_reservation(self, spot_id, registration_plate):
+        """
+        Annule une réservation pour une place de parking spécifique.
+        Paramètres :
+            spot_id (int) : L'identifiant unique de la place réservée.
+            registration_plate (str) : La plaque d'immatriculation du véhicule de l'utilisateur.
+        """
+        db = DatabaseController()
+        try:
+            db.cancel_booking(spot_id, registration_plate)
+        except Exception as e:
+            print(f"[Error] Unable to cancel reservation for spot {spot_id} and {registration_plate}: {e}")
+
+    def calculate_fee(self, spot_id):
+        """
+        Calcule les frais de stationnement pour une place spécifique.
+        Paramètres :
+            spot_id (int) : L'identifiant unique de la place de parking.
+        Retourne :
+            nombre réel (float) : Les frais de stationnement calculés, ou 0.0 si une erreur survient.
+        """
+        db = DatabaseController()
+        try:
+            usage = db.fetch_last_usage_time(spot_id)
+            if usage and usage[1] is not None:
+                time_spent = usage[1]  # Durée en heures
+                fee = time_spent * 5  # Exemple : 5 euros par heure
+                return round(fee, 2)
+        except Exception as e:
+            print(f"[Error] Unable to calculate fee for spot {spot_id}: {e}")
+        return 0.0
+
+    def confirm_payment(self, spot_id, registration_plate, amount):
+        """
+        Enregistre le paiement pour une utilisation de place de parking.
+        Paramètres :
+            spot_id (int) : L'identifiant unique de la place de parking.
+            registration_plate (str) : La plaque d'immatriculation du véhicule.
+            amount (float) : Le montant du paiement à enregistrer.
+        """
+        db = DatabaseController()
+        try:
+            usage = db.fetch_last_spot_usage(spot_id)
+            if usage:
+                usage_id = usage[0]
+                db.new_payment(usage_id, registration_plate, amount)
+        except Exception as e:
+            print(f"[Error] Unable to confirm payment for spot {spot_id} and {registration_plate}: {e}")
+
+    def get_parked_vehicles(self):
+        """
+        Récupère la liste de tous les véhicules actuellement garés.
+        Retourne :
+            list : Une liste des véhicules garés, chaque élément contenant le numéro de la place et la plaque d'immatriculation.
+        """
+        db = DatabaseController()
+        parked_vehicles = []
+        try:
+            for spot in db.fetch_all_parking_spots():
+                if self.check_spot_status(spot[0]) == "occupied":
+                    usage = db.fetch_last_spot_usage(spot[0])
+                    if usage:
+                        parked_vehicles.append((spot[1], usage[0]))  # Spot_number et plaque
+        except Exception as e:
+            print(f"[Error] Unable to retrieve parked vehicles: {e}")
+        return parked_vehicles
+
+    def update_parking_spot_status(self):
+        """
+        Met à jour l'état de toutes les places de parking en mémoire en fonction des données actuelles de la base de données.
+        """
+        db = DatabaseController()
+        try:
+            for spot in db.fetch_all_parking_spots():
+                spot_id = spot[0]
+                status = self.check_spot_status(spot_id)
+                # Mise à jour de l'état dans self.parking_lot si nécessaire
+        except Exception as e:
+            print(f"[Error] Unable to update parking spot status: {e}")
