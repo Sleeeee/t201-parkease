@@ -76,6 +76,15 @@ class DatabaseController:
                               VALUES (?, ?, ?)""", (floor_number, row_number, spot_number))
             conn.commit()
 
+    def delete_parking_spot(self, floor_number, row_number, spot_number):
+        """Deletes an existing ParkingSpots entry"""
+
+        with splite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""DELETE
+                              FROM ParkingSpots
+                              WHERE floor_number = ? AND row_number = ? AND spot_number = ?""", (floor_number, row_number, spot_number))
+
     def new_entry_visitor(self, spot_id, registration_plate):
         """Adds a new entry to the ParkingUsage table. The entry time is set to the current timestamp"""
 

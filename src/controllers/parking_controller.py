@@ -42,6 +42,15 @@ class ParkingController:
             db.create_parking_spot(floor_number, row_number, spot_number)
             return ""
 
+    def delete_spot(self, floor_number: int, row_number: int, spot_number: int):
+        db = DatabaseController()
+        try:
+            self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
+            db.delete_parking_spot(floor_number, row_number, spot_number)
+            return ""
+        except KeyError as e:
+            return f"[Error] This spot does not exist : {e}"
+
     def new_entry(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str):
         """A user enters the specified spot
            Updates the spot within self.parking_lot : spot.status = "occupied", spot.linked_car = registration_plate
