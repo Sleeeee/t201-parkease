@@ -40,38 +40,43 @@ class ParkingOverviewFrame(MainFrame):
         super().__init__(parent, controller)
         parking_lot = self.controller.parking_lot
         ttk.Label(self, text=str(parking_lot), style="Default.TLabel").pack(pady=(1,0))
+
+        """Entry Form, Structure and initialisation"""
+
         floor = IntVar()
         row = IntVar()
         spot = IntVar()
         plate = StringVar()
         action = StringVar()
 
-        ttk.Label(self, text="Floor", style="Default.TLabel").pack(pady=(7,0))
-        ttk.Entry(self, textvariable=floor).pack()
-        ttk.Label(self, text='Row', style="Default.TLabel").pack()
-        ttk.Entry(self, textvariable=row).pack()
-        ttk.Label(self, text="Spot", style="Default.TLabel").pack()
-        ttk.Entry(self, textvariable=spot).pack()
-        ttk.Label(self, text="Registration Plate", style="Default.TLabel").pack()
-        ttk.Entry(self, textvariable=plate).pack()
-        ttk.Radiobutton(self, text='Enter', variable=action, value='enter').pack(pady=(4,0))
-        ttk.Radiobutton(self, text='Exit', variable=action, value='exit',).pack(pady=(4,0))
-        ttk.Button(self, text='Submit', command=lambda: self.submit(int(floor.get()),int(row.get()),int(spot.get()),plate.get(),action.get())).pack(pady=(4,0))
+        ttk.Label(self, text="Floor", style="Default.TLabel").pack(anchor="sw")
+        ttk.Entry(self, textvariable=floor).pack(anchor="sw")
+        ttk.Label(self, text='Row', style="Default.TLabel").pack(anchor="sw")
+        ttk.Entry(self, textvariable=row).pack(anchor="sw")
+        ttk.Label(self, text="Spot", style="Default.TLabel").pack(anchor="sw")
+        ttk.Entry(self, textvariable=spot).pack(anchor="sw")
+        ttk.Label(self, text="Registration Plate", style="Default.TLabel").pack(anchor="sw")
+        ttk.Entry(self, textvariable=plate).pack(anchor="sw")
+        ttk.Radiobutton(self, text='Enter', variable=action, value='enter').pack(anchor="sw",pady=(4,0))
+        ttk.Radiobutton(self, text='Exit', variable=action, value='exit',).pack(anchor="sw",pady=(4,0))
+        ttk.Button(self, text='Submit', command=lambda: self.submit(int(floor.get()),int(row.get()),int(spot.get()),plate.get(),action.get())).pack(anchor="sw",pady=(4,0))
+
+        """Creation Form, Structure and initialisation"""
 
         floor_create = IntVar()
         row_create = IntVar()
         spot_create = IntVar()
         action_create = StringVar()
 
-        ttk.Label(self, text="Floor", style="Default.TLabel").pack(pady=(7,0))
-        ttk.Entry(self, textvariable=floor_create).pack()
-        ttk.Label(self, text='Row', style="Default.TLabel").pack()
-        ttk.Entry(self, textvariable=row_create).pack()
-        ttk.Label(self, text="Spot", style="Default.TLabel").pack()
-        ttk.Entry(self, textvariable=spot_create).pack()
-        ttk.Radiobutton(self, text='Create Spot', variable=action_create, value='create').pack(pady=(4,0))
-        ttk.Radiobutton(self, text='Erase Spot', variable=action_create, value='erase',).pack(pady=(4,0))
-        ttk.Button(self, text='Submit', command=lambda: self.submitCreate(int(floor_create.get()),int(row_create.get()),int(spot_create.get()),action_create.get())).pack(pady=(4,0))
+        ttk.Label(self, text="Floor", style="Default.TLabel").pack(anchor="sw",pady=(4,0))
+        ttk.Entry(self, textvariable=floor_create).pack(anchor="sw")
+        ttk.Label(self, text='Row', style="Default.TLabel").pack(anchor="sw")
+        ttk.Entry(self, textvariable=row_create).pack(anchor="sw")
+        ttk.Label(self, text="Spot", style="Default.TLabel").pack(anchor="sw")
+        ttk.Entry(self, textvariable=spot_create).pack(anchor="sw")
+        ttk.Radiobutton(self, text='Create Spot', variable=action_create, value='create').pack(pady=(4,0),anchor="sw")
+        ttk.Radiobutton(self, text='Delete Spot', variable=action_create, value='delete',).pack(pady=(4,0),anchor="sw")
+        ttk.Button(self, text='Submit', command=lambda: self.submitCreate(int(floor_create.get()),int(row_create.get()),int(spot_create.get()),action_create.get())).pack(pady=(4,0),anchor="sw")
     
     def submit(self,floor,row,spot,plate,action):
         if action == "enter":
@@ -90,8 +95,8 @@ class ParkingOverviewFrame(MainFrame):
             control = self.controller.create_new_spot(floor,row,spot)
             if control:
                 print(control)
-        elif action == "erase":
-            print("not implemented")
+        elif action == "delete":
+            control = self.controller.delete_spot(floor,row,spot)
             if control:
                 print(control)
         else:
