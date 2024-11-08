@@ -79,7 +79,7 @@ class DatabaseController:
     def delete_parking_spot(self, floor_number, row_number, spot_number):
         """Deletes an existing ParkingSpots entry"""
 
-        with splite3.connect(self.path) as conn:
+        with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("""DELETE
                               FROM ParkingSpots
