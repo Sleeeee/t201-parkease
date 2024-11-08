@@ -133,6 +133,15 @@ class DatabaseController:
                               VALUES (?, ?, ?)""", (usage_id, registration_plate, amount))
             conn.commit()
 
+    def fetch_all_usages(self):
+        """Retrieves the complete parking history"""
+        
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""SELECT id, spot_id, registration_plate, entry_time, exit_time
+                              FROM ParkingUsage""")
+            return cursor.fetchall()
+
     def cancel_booking(self, spot_id, registration_plate):
         """
         Annule une réservation pour une place spécifique dans la base de données.

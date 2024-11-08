@@ -130,6 +130,6 @@ class AnalyticsOverviewFrame(MainFrame):
     """Frame used to visualize current or past data about the parking lots and generate reports"""
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        for i in self.controller.fetch_analytics():
+        for i in self.controller.fetch_all_usages():
             ttk.Label(self, text=i, style="Default.TLabel").pack(pady=(1,0))
 
