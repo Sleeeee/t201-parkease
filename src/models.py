@@ -55,7 +55,7 @@ class ParkingSpot:
         self.status = "free"
         self.linked_car = None
 
-    def pay(self, registration_plate, time_spent):
+    def pay(self, registration_plate : int, time_spent : float):
         """Returns the amount that has to be paid by the car"""
         assert (self.status == "occupied") and (registration_plate == self.linked_car.registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
         return self.linked_car.HOURLY_RATE * time_spent
@@ -92,6 +92,9 @@ class ParkingRow:
         #spot.keys() = "id", "spot_number"
         self.spots[spot["spot_number"]] = ParkingSpot(spot["id"], spot["spot_number"])
 
+    def remove_spot(self, spot):
+        pass
+
 class ParkingFloor:
     def __init__(self, floor_number):
         self._floor_number = floor_number
@@ -114,6 +117,9 @@ class ParkingFloor:
             self.rows[row_number] = ParkingRow(row_number)
         self.rows[row_number].add_spot({"id": id, "spot_number": spot_number})
 
+    def remove_spot(self, spot):
+        pass
+
 class ParkingLot:
     def __init__(self, lot_number):
         self._lot_number = lot_number
@@ -135,6 +141,9 @@ class ParkingLot:
         if floor_number not in self.floors:
             self.floors[floor_number] = ParkingFloor(floor_number)
         self.floors[floor_number].add_spot({"id": id, "spot_number": spot_number, "row_number": row_number})
+
+    def remove_spot(spot):
+        pass
 
 class Car:
     HOURLY_RATE = 3.00 # Price in dollars for 1 hour of parking
