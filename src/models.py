@@ -153,7 +153,6 @@ class StandardCar(Car):
     HOURLY_RATE = 3.00
     def __init__(self, registration_plate):
         super().__init__(self, registration_plate)
-        self.hourly_rate = super().HOURLY_RATE
 
 class PremiumCar(Car):
     HOURLY_RATE = 2.00
