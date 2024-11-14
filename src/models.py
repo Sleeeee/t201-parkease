@@ -151,7 +151,7 @@ class Car:
     def __init__(self, registration_plate):
         self.registration_plate = registration_plate
 
-class NonSubscriber(Car):
+class StandardCar(Car):
     def __init__(self, registration_plate):
         super().__init__(self, registration_plate)
         self.hourly_rate = super().HOURLY_RATE
@@ -159,7 +159,7 @@ class NonSubscriber(Car):
     def subscribe(self):
         pass
 
-class Subscriber(Car):
+class PremiumCar(Car):
     def __init__(self, registration_plate):
         super().__init__(self, registration_plate)
         self.hourly_rate = super().HOURLY_RATE * 0.8
