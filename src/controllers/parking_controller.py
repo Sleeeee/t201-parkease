@@ -33,7 +33,7 @@ class ParkingController:
         status = "occupied" if exit_time is None else "free" # If someone entered but never left, it means the spot is occupied. If the last user left, it means the spot is free
         return registration_plate, status
 
-    def create_new_spot(self, floor_number: int, row_number: int, spot_number: int):
+    def create_new_spot(self, floor_number: int, row_number: int, spot_number: int) -> str:
         db = DatabaseController()
         try:
             self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
@@ -42,7 +42,7 @@ class ParkingController:
             db.create_parking_spot(floor_number, row_number, spot_number)
             return ""
 
-    def delete_spot(self, floor_number: int, row_number: int, spot_number: int):
+    def delete_spot(self, floor_number: int, row_number: int, spot_number: int) -> str:
         db = DatabaseController()
         try:
             self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
@@ -51,7 +51,7 @@ class ParkingController:
         except KeyError as e:
             return f"[Error] This spot does not exist : {e}"
 
-    def new_entry(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str):
+    def new_entry(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str) -> str:
         """A user enters the specified spot
            Updates the spot within self.parking_lot : spot.status = "occupied", spot.linked_car = registration_plate
            Returns an empty string is everything worked, or a string containing the error if something failed"""
@@ -68,7 +68,7 @@ class ParkingController:
             # Error raised by trying to access a spot that isn't contained inside self.parking_lot
             return f"[Error] This spot does not exit : {e}"
 
-    def new_exit(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str):
+    def new_exit(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str) -> str:
         """A user exits the specified spot
            Updates the spot within self.parking_lot : spot.status = "free", spot.linked_car = None
            Returns an empty string is everything worked, or a string containing the error if something failed"""
