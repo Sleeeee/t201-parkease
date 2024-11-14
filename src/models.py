@@ -55,12 +55,12 @@ class ParkingSpot:
         self.status = "free"
         self.linked_car = None
 
-    def pay(self, registration_plate : int, time_spent : float):
+    def pay(self, registration_plate : str, time_spent : float):
         """Returns the amount that has to be paid by the car"""
         assert (self.status == "occupied") and (registration_plate == self.linked_car.registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
         return self.linked_car.HOURLY_RATE * time_spent
 
-    def book(self, client_id):
+    def book(self, registration_plate : str):
         # WARNING : Not needed for MVP
         """
         Books the parking spot for the client if he is subscribed.
