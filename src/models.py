@@ -1,3 +1,5 @@
+from typing import Dict
+
 class ParkingSpot:
     """
     A class representing a parking spot. The ParkingSpot constructor is only called within ParkingRow (eventually while creating a top-level Parking object)
@@ -32,7 +34,7 @@ class ParkingSpot:
         return self._status
 
     @status.setter
-    def status(self, status):
+    def status(self, status: str):
         if status not in self.ALLOWED_STATUSES:
             raise ValueError(f"Invalid status '{status}'. Must be one the following : {self.ALLOWED_STATUSES}")
         self._status = status
@@ -74,7 +76,7 @@ class ParkingSpot:
         pass
 
 class ParkingRow:
-    def __init__(self, row_number):
+    def __init__(self, row_number: int):
         self._row_number = row_number
         self.spots = {}
 
@@ -88,7 +90,7 @@ class ParkingRow:
             output.append(f"            {str(self.spots[spot])}")
         return "\n".join(output)
 
-    def add_spot(self, spot):
+    def add_spot(self, spot: Dict[str, int]):
         #spot.keys() = "id", "spot_number"
         self.spots[spot["spot_number"]] = ParkingSpot(spot["id"], spot["spot_number"])
 
@@ -96,7 +98,7 @@ class ParkingRow:
         pass
 
 class ParkingFloor:
-    def __init__(self, floor_number):
+    def __init__(self, floor_number: int):
         self._floor_number = floor_number
         self.rows = {}
 
@@ -110,7 +112,7 @@ class ParkingFloor:
             output.append(f"        {str(self.rows[row])}")
         return "\n".join(output)
 
-    def add_spot(self, spot):
+    def add_spot(self, spot: Dict[str, int]):
         #spot.keys() = "id", "spot_number", "row_number"
         id, spot_number, row_number = spot["id"], spot["spot_number"], spot["row_number"]
         if row_number not in self.rows:
@@ -121,7 +123,11 @@ class ParkingFloor:
         pass
 
 class ParkingLot:
-    def __init__(self, lot_number):
+    def __init__(self, lot_number: int):
+        """
+        PRE : lot_number est un entier
+        POST : l'objet ParkingLot possède un numéro d'identification et un dictionnaire vide contenant les étages (qui contiendront les rangées, qui elles contiendront les emplacements)
+        """
         self._lot_number = lot_number
         self.floors = {}
 
@@ -135,14 +141,25 @@ class ParkingLot:
             output.append(f"    {str(self.floors[floor])}")
         return "\n".join(output)
 
-    def add_spot(self, spot):
-        #spot.keys() = "id", "spot_number", "row_number", "floor_number"
+    def add_spot(self, spot: Dict[str, int]):
+        """"
+        PRE : Spot est un dictionnaire dont les clés sont "id", "spot_number", "row_number", "floor_number", chacune correspondant à un entier
+        POST : Si l'étage demandé n'existe pas, il est créé (à vide). Appelle ensuite la méthode add_spot() de l'objet ParkingFloor, qui va créer un ParkingRow si besoin. À terme, L'objet ParkingSpot est créé dans le ParkingRow correspondant
+        RAISES : KeyError si l'emplacement existe déjà / TypeError si spot n'est pas un dictionnaire ou ne correspond pas à la description indiquée
+        """
+        # TODO : finir la vérification des types et raise l'erreur correspondante
         id, spot_number, row_number, floor_number = spot["id"], spot["spot_number"], spot["row_number"], spot["floor_number"] 
         if floor_number not in self.floors:
             self.floors[floor_number] = ParkingFloor(floor_number)
         self.floors[floor_number].add_spot({"id": id, "spot_number": spot_number, "row_number": row_number})
 
     def remove_spot(spot):
+        """
+        PRE : Spot est un dictionnaire dont les clés sont "id", "spot_number", "row_number", "floor_number", chacune correspondant à un entier
+        POST : Supprime l'emplacement spécifié. Supprime également la rangée/l'étage si vide après l'opération
+        RAISES : KeyError si l'emplacement n'existe pas / TypeError si spot n'est pas un dictionnaire ou ne correspond pas à la description indiquée
+        """
+        # TODO : implémenter la méthode
         pass
 
 class Car:

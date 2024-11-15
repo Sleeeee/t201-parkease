@@ -52,9 +52,11 @@ class ParkingController:
             return f"[Error] This spot does not exist : {e}"
 
     def new_entry(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str) -> str:
-        """A user enters the specified spot
-           Updates the spot within self.parking_lot : spot.status = "occupied", spot.linked_car = registration_plate
-           Returns an empty string is everything worked, or a string containing the error if something failed"""
+        """
+        PRE : floor_number, row_number et spot_number sont des entiers désignant la place de parking, registration_plate est la plaque d'immatriculation du véhicule entrant
+        POST : Le statut de l'emplacement est occupé, la voiture liée à l'emplacement correspond à la plaque d'immatriculation, et la base de données contient une nouvelle entrée
+        RETURNS : Un str contenant un message d'erreur si l'emplacement est déjà occupé où s'il n'existe pas. Un str vide si tout se passe comme prévu
+        """
         db = DatabaseController()
         try:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
@@ -69,9 +71,11 @@ class ParkingController:
             return f"[Error] This spot does not exit : {e}"
 
     def new_exit(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str) -> str:
-        """A user exits the specified spot
-           Updates the spot within self.parking_lot : spot.status = "free", spot.linked_car = None
-           Returns an empty string is everything worked, or a string containing the error if something failed"""
+        """
+        PRE : floor_number, row_number et spot_number sont des entiers désignant la place de parking, registration_plate est la plaque d'immatriculation du véhicule sortant
+        POST : Le statut de l'emplacement est libre, aucune voiture n'est liée à l'emplacement, l'entrée de la base de donnée est marquée comme cloturée
+        RETURNS : Un str contenant un message d'erreur si l'emplacement n'est pas occupé, si la plaque d'immatriculation ne correspond pas avec celle enregistrée dans ParkingSpot.linked_car.registration_plate, ou si l'emplacement n'existe pas. Un str vide si tout se passe comme prévu
+        """
         db = DatabaseController()
         try:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
