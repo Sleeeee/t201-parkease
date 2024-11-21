@@ -1,5 +1,5 @@
 from .database_controller import DatabaseController
-from models import ParkingLot, Car
+from models import ParkingLot, StandardCar
 
 class ParkingController:
     def __init__(self, root):
@@ -19,7 +19,7 @@ class ParkingController:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number] # Fetches the spot from self.parking_lot
             registration_plate, status = self.check_spot_status(id) # Verifies if a car is occupying the spot
             if registration_plate:
-                spot.linked_car = Car(registration_plate) # Sets the occupant only if it exists
+                spot.linked_car = StandardCar(registration_plate) # Sets the occupant only if it exists
             spot.status = status
 
     def check_spot_status(self, spot_id: int):

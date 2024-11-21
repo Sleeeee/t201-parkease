@@ -46,10 +46,10 @@ class ParkingSpot:
         return string
 
     def enter(self, registration_plate: str):
-        """Updates status = "occupied" and linked_car = Car(registration_plate)"""
+        """Updates status = "occupied" and linked_car = StandardCar(registration_plate)"""
         assert self.status == "free" # Raises an error if someone is occupying the spot
         self.status = "occupied"
-        self.linked_car = Car(registration_plate)
+        self.linked_car = StandardCar(registration_plate)
 
     def exit(self, registration_plate: str):
         """Updates status = "free" and linked_car = None """
@@ -168,13 +168,9 @@ class Car:
 
 class StandardCar(Car):
     HOURLY_RATE = 3.00
-    def __init__(self, registration_plate):
-        super().__init__(self, registration_plate)
 
 class PremiumCar(Car):
-    HOURLY_RATE = 2.00
-    def __init__(self, registration_plate):
-        super().__init__(self, registration_plate)
+    HOURLY_RATE = 2.0
 
 class Payment:
     def __init__(self, usage_id, registration_plate, amount):
