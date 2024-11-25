@@ -25,7 +25,7 @@ class ParkEaseApp:
         self.sidebar_frame.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
 
         self.init_grid()
-        self.switch_mainframe(ParkingOverviewFrame, ParkingController)
+        self.switch_mainframe(ParkingOverviewFrame, ParkingController, "Parking Management")
 
     def init_grid(self):
         """Initializes the grid layout"""
@@ -42,7 +42,7 @@ class ParkEaseApp:
         style.configure("Default.TButton", background="white", borderwidth=1)
         style.configure("Default.TLabel", background="white")
 
-    def switch_mainframe(self, frame_class, frame_controller_class):
+    def switch_mainframe(self, frame_class, frame_controller_class, title):
         """Switches the main frame between the different available views"""
         if isinstance(self.current_mainframe, frame_class):
             return
@@ -50,3 +50,5 @@ class ParkEaseApp:
             self.current_mainframe.destroy() # Frees memory for the current frame
         self.current_mainframe = frame_class(self.root, frame_controller_class(self)) # Sets the current frame to a new object of class *frame_class* (parent given as argument)
         self.current_mainframe.grid(row=2, column=1, sticky="nsew", padx=10, pady=10)
+        self.title_frame.title = title
+

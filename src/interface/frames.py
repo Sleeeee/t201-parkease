@@ -1,32 +1,54 @@
-from tkinter import ttk, IntVar, StringVar
+from tkinter import ttk, IntVar, PhotoImage, StringVar
 from controllers import ParkingController, PaymentsController, SubscribersController, AnalyticsController
 
 class LogoFrame(ttk.Frame):
     """Frame containing the logo"""
     def __init__(self, parent):
         super().__init__(parent, width=250, height=250, style="Default.TFrame")
+        logo = PhotoImage(file="./resources/logo.png", width=250, height=250)
+        ttk.Label(self, image=logo).pack()
+        self.logo = logo
 
 class TitleFrame(ttk.Frame):
     """Frame containing information about the current overview"""
-    def __init__(self, parent):
+    def __init__(self, parent, title=None):
         super().__init__(parent, style="Default.TFrame")
+        self._title = ttk.Label(self, text=title, style="Default.TLabel")
+        self._title.pack(pady=10)
 
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, title):
+        self._title.config(text=title)
 
 
 class BannerFrame(ttk.Frame):
     """Frame used to notify the user about actions registered, or alert about specific events"""
     def __init__(self, parent):
         super().__init__(parent, style="Default.TFrame")
+        self._notification = ttk.Label(self, text="", style="Default.TLabel")
+        self._notification.pack(pady=10)
+
+    @property
+    def notification(self):
+        return self._notification
+
+    @notification.setter
+    def notification(self, text):
+        self._notification.config(text=text)
         
 class SidebarFrame(ttk.Frame):
     """Frame containing the buttons to switch the current overview"""
     def __init__(self, parent, app):
         super().__init__(parent, style="Default.TFrame")
 
-        ttk.Button(self, text="Manage parkings", style="Default.TButton", command=lambda: app.switch_mainframe(ParkingOverviewFrame, ParkingController)).pack(pady=(4,0))
-        ttk.Button(self, text="Manage payments", style="Default.TButton", command=lambda: app.switch_mainframe(PaymentsOverviewFrame, PaymentsController)).pack(pady=(4,0))
-        ttk.Button(self, text="Manage subscribers", style="Default.TButton", command=lambda: app.switch_mainframe(SubscribersOverviewFrame, SubscribersController)).pack(pady=(4,0))
-        ttk.Button(self, text="View analytics", style="Default.TButton", command=lambda: app.switch_mainframe(AnalyticsOverviewFrame, AnalyticsController)).pack(pady=(4,0))
+        ttk.Button(self, text="Manage parkings", style="Default.TButton", command=lambda: app.switch_mainframe(ParkingOverviewFrame, ParkingController, "Parking Management")).pack(pady=(4,0))
+        ttk.Button(self, text="Manage payments", style="Default.TButton", command=lambda: app.switch_mainframe(PaymentsOverviewFrame, PaymentsController, "Payments Management")).pack(pady=(4,0))
+        ttk.Button(self, text="Manage subscribers", style="Default.TButton", command=lambda: app.switch_mainframe(SubscribersOverviewFrame, SubscribersController, "Subscribers Management")).pack(pady=(4,0))
+        ttk.Button(self, text="View analytics", style="Default.TButton", command=lambda: app.switch_mainframe(AnalyticsOverviewFrame, AnalyticsController, "Analytics Visualization")).pack(pady=(4,0))
 
 class MainFrame(ttk.Frame):
     """Parent class to the overviews"""
@@ -91,24 +113,20 @@ class ParkingOverviewFrame(MainFrame):
     def submit(self,floor,row,spot,plate,action):
         if action == "enter":
             control = self.controller.new_entry(floor,row,spot,plate)
-            if control:
-                print(control)
+            self.master.banner_frame.notification = control
         elif action == "exit":
             control = self.controller.new_exit(floor,row,spot,plate)
-            if control:
-                print(control)
+            self.master.banner_frame.notification = control
         else:
             print("Please, enter an action")
 
     def submitCreate(self,floor,row,spot,action):
         if action == "create":
             control = self.controller.create_new_spot(floor,row,spot)
-            if control:
-                print(control)
+            self.master.banner_frame.notification = control
         elif action == "delete":
             control = self.controller.delete_spot(floor,row,spot)
-            if control:
-                print(control)
+            self.master.banner_frame.notification = control
         else:
             print("Please, enter an action")
 
