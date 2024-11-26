@@ -76,8 +76,11 @@ class DatabaseController:
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute("""INSERT INTO ParkingSpots (floor_number, row_number, spot_number)
-                              VALUES (?, ?, ?)""", (floor_number, row_number, spot_number))
+                              VALUES (?, ?, ?)
+                              RETURNING id""", (floor_number, row_number, spot_number))
+            id = cursor.fetchone()
             conn.commit()
+            return id
 
     def delete_parking_spot(self, floor_number, row_number, spot_number):
         """Deletes an existing ParkingSpots entry"""

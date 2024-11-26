@@ -94,8 +94,8 @@ class ParkingRow:
         #spot.keys() = "id", "spot_number"
         self.spots[spot["spot_number"]] = ParkingSpot(spot["id"], spot["spot_number"])
 
-    def remove_spot(self, spot):
-        pass
+    def remove_spot(self, spot_number : int):
+        del self.spots[spot_number]
 
 class ParkingFloor:
     def __init__(self, floor_number: int):
@@ -120,7 +120,10 @@ class ParkingFloor:
         self.rows[row_number].add_spot({"id": id, "spot_number": spot_number})
 
     def remove_spot(self, spot):
-        pass
+        spot_number, row_number = spot["spot_number"], spot["row_number"]
+        self.rows[row_number].remove_spot(spot_number)
+        if not self.rows[row_number].spots:
+            del self.rows[row_number]
 
 class ParkingLot:
     def __init__(self, lot_number: int):
@@ -153,14 +156,18 @@ class ParkingLot:
             self.floors[floor_number] = ParkingFloor(floor_number)
         self.floors[floor_number].add_spot({"id": id, "spot_number": spot_number, "row_number": row_number})
 
-    def remove_spot(spot):
+    def remove_spot(self, spot):
         """
-        PRE : Spot est un dictionnaire dont les clés sont "id", "spot_number", "row_number", "floor_number", chacune correspondant à un entier
+        PRE : Spot est un dictionnaire dont les clés sont "spot_number", "row_number", "floor_number", chacune correspondant à un entier
         POST : Supprime l'emplacement spécifié. Supprime également la rangée/l'étage si vide après l'opération
         RAISES : KeyError si l'emplacement n'existe pas / TypeError si spot n'est pas un dictionnaire ou ne correspond pas à la description indiquée
         """
-        # TODO : implémenter la méthode
-        pass
+        spot_number, row_number, floor_number = spot["spot_number"], spot["row_number"], spot["floor_number"]
+        self.floors[floor_number].remove_spot({"spot_number": spot_number, "row_number": row_number})
+        if not self.floors[floor_number].rows:
+            del self.floors[floor_number]
+
+        
 
 class Car:
     def __init__(self, registration_plate):
