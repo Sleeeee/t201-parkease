@@ -1,11 +1,14 @@
 from tkinter import ttk, IntVar, PhotoImage, StringVar
 from controllers import ParkingController, PaymentsController, SubscribersController, AnalyticsController
+import os
+from tkinter import ttk, PhotoImage
 
 class LogoFrame(ttk.Frame):
-    """Frame containing the logo"""
-    def __init__(self, parent):
-        super().__init__(parent, width=250, height=250, style="Default.TFrame")
-        logo = PhotoImage(file="./resources/logo.png", width=250, height=250)
+    def __init__(self, root):
+        super().__init__(root)
+        self.root = root
+        logo_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'logo.png')
+        logo = PhotoImage(file=logo_path, width=250, height=250)
         ttk.Label(self, image=logo).pack()
         self.logo = logo
 
