@@ -52,14 +52,15 @@ class SidebarFrame(ttk.Frame):
 
 class MainFrame(ttk.Frame):
     """Parent class to the overviews"""
-    def __init__(self, parent, controller):
+    def __init__(self, parent, app, controller):
         super().__init__(parent, style="Default.TFrame")
+        self.app = app
         self.controller = controller
 
 class ParkingOverviewFrame(MainFrame):
     """Frame used to view the parking lot occupancy"""
-    def __init__(self, parent, controller):
-        super().__init__(parent, controller)
+    def __init__(self, parent, app, controller):
+        super().__init__(parent, app, controller)
 
         column_left = ttk.Frame(self, style="Default.TFrame")
         column_right = ttk.Frame(self, style="Default.TFrame")
@@ -113,41 +114,42 @@ class ParkingOverviewFrame(MainFrame):
     def submit(self,floor,row,spot,plate,action):
         if action == "enter":
             control = self.controller.new_entry(floor,row,spot,plate)
-            self.master.banner_frame.notification = control
+            self.app.banner_frame.notification = control
         elif action == "exit":
             control = self.controller.new_exit(floor,row,spot,plate)
-            self.master.banner_frame.notification = control
+            self.app.banner_frame.notification = control
         else:
             print("Please, enter an action")
 
     def submitCreate(self,floor,row,spot,action):
         if action == "create":
             control = self.controller.create_new_spot(floor,row,spot)
-            self.master.banner_frame.notification = control
+            self.app.banner_frame.notification = control
         elif action == "delete":
             control = self.controller.delete_spot(floor,row,spot)
-            self.master.banner_frame.notification = control
+            self.app.banner_frame.notification = control
+            # TODO : apply color (error messages start with [Error])
         else:
             print("Please, enter an action")
 
 class PaymentsOverviewFrame(MainFrame):
     """Frame used to encode or review payments"""
-    def __init__(self, parent, controller):
-        super().__init__(parent, controller)
+    def __init__(self, parent, app, controller):
+        super().__init__(parent, app, controller)
         for i in self.controller.fetch_payments_data():
             ttk.Label(self, text=i, style="Default.TLabel").pack(pady=(1,0))
 
 class SubscribersOverviewFrame(MainFrame):
     """Frame used to manage subscribers"""
-    def __init__(self, parent, controller):
-        super().__init__(parent, controller)
+    def __init__(self, parent, app, controller):
+        super().__init__(parent, app, controller)
         for i in self.controller.fetch_subscribers_data():
             ttk.Label(self, text=i, style="Default.TLabel").pack(pady=(1,0))
 
 class AnalyticsOverviewFrame(MainFrame):
     """Frame used to visualize current or past data about the parking lots and generate reports"""
-    def __init__(self, parent, controller):
-        super().__init__(parent, controller)
+    def __init__(self, parent, app, controller):
+        super().__init__(parent, app, controller)
         for i in self.controller.fetch_all_usages():
             ttk.Label(self, text=i, style="Default.TLabel").pack(pady=(1,0))
 

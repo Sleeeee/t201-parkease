@@ -40,14 +40,14 @@ class ParkingController:
             return "[Error] This spot already exists"
         except KeyError:
             db.create_parking_spot(floor_number, row_number, spot_number)
-            return ""
+            return f"[SPOT CREATED] The parking spot at floor {floor_number} - row {row_number} - spot {spot_number} was successfully created"
 
     def delete_spot(self, floor_number: int, row_number: int, spot_number: int) -> str:
         db = DatabaseController()
         try:
             self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             db.delete_parking_spot(floor_number, row_number, spot_number)
-            return ""
+            return f"[SPOT DELETED] The parking spot at floor {floor_number} - row {row_number} - spot {spot_number} was successfully deleted"
         except KeyError as e:
             return f"[Error] This spot does not exist : {e}"
 
@@ -62,7 +62,7 @@ class ParkingController:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             spot.enter(registration_plate) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
             db.new_entry_visitor(spot.id, registration_plate) # Creates an entry inside the database
-            return ""
+            return f"[NEW ENTRY] Car {registration_plate} was successfully parked at floor {floor_number} - row {row_number} - spot {spot_number}"
         except AssertionError as e:
             # Error raised by spot.enter()
             return f"[Error] This spot is already occupied : {e}"
@@ -84,7 +84,7 @@ class ParkingController:
             db.new_payment(usage_id, registration_plate, amount) # Stores the payment inside the database
             spot.exit(registration_plate) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
             db.new_exit(spot.id, registration_plate) # Sets the exit time in the database
-            return ""
+            return f"[NEW EXIT] Car {registration_plate} was successfully parked out of floor {floor_number} - row {row_number} - spot {spot_number}"
         except (AssertionError, TypeError) as e:
             #Error raised by spot.exit()
             return f"[Error] This spot is unoccupied or the registration plates don't match : {e}"

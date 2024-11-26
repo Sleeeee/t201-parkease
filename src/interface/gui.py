@@ -48,7 +48,7 @@ class ParkEaseApp:
             return
         if self.current_mainframe is not None:
             self.current_mainframe.destroy() # Frees memory for the current frame
-        self.current_mainframe = frame_class(self.root, frame_controller_class(self)) # Sets the current frame to a new object of class *frame_class* (parent given as argument)
+        self.current_mainframe = frame_class(self.root, self, frame_controller_class(self)) # Sets the current frame to a new object of class *frame_class* (parent given as argument)
         self.current_mainframe.grid(row=2, column=1, sticky="nsew", padx=10, pady=10)
         self.title_frame.title = title
 
