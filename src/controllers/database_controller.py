@@ -35,8 +35,7 @@ class DatabaseController:
                               )""")
             cursor.execute("""CREATE TABLE PremiumCars (
                               premium_id INTEGER PRIMARY KEY,
-                              registration_plate VARCHAR(20) NOT NULL,
-                              )""")
+                              registration_plate VARCHAR(20) NOT NULL)""")
             conn.commit()
 
     def fetch_all_parking_spots(self):
