@@ -243,7 +243,7 @@ class PremiumCar(Car):
 class Payment:
     """"""
     def __init__(self, usage_id, registration_plate, amount):
-        """""""
+        """"""
         self.usage_id = usage_id
         self.registration_plate = registration_plate
         self.amount = amount
