@@ -35,7 +35,7 @@ class DatabaseController:
                               )""")
             cursor.execute("""CREATE TABLE PremiumCars (
                               premium_id INTEGER PRIMARY KEY,
-                              registration_plate VARCHAR(20) NOT NULL)""")
+                              registration_plate VARCHAR(20) UNIQUE)""")
             conn.commit()
 
     def fetch_all_parking_spots(self):
@@ -136,9 +136,25 @@ class DatabaseController:
                               VALUES (?, ?, ?)""", (usage_id, registration_plate, amount))
             conn.commit()
 
+    def fetch_all_premium_subcriptions(self):
+        """
+        Fetches all existing premium subscriptions
+        PRE : None
+        POST : Returns a list of all the registered car plates
+        """
+
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""SELECT registration_plate
+                              FROM PremiumCars""")
+            return cursor.fetchall()
+
     def is_premium(self, registration_plate: str) -> bool:
-        """Verifies whether registration_plate matches an existing subscription
-           Returns : True if the car owns a premium subscription, False if not"""
+        """
+        Verifies whether registration_plate matches an existing subscription
+        PRE : None
+        POST : Returns True if the car owns a premium subscription, False if not
+        """
 
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
@@ -147,11 +163,31 @@ class DatabaseController:
                               WHERE registration_plate = ?""", (registration_plate,))
             return cursor.fetchone() is not None
 
-    def add_premium_subscription(self, registration_plate):
-        pass
+    def add_premium_subscription(self, registration_plate: str) -> None:
+        """
+        Adds a new entry to the PremiumCars table
+        PRE : None
+        POST : registration_plate is added as a new entry to the PremiumCars table
+        RAISES : sqlite3.IntegrityError if the entry already exists (UNIQUE constraint failed)
+        """
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""INSERT INTO PremiumCars (registration_plate)
+                              VALUES (?)""", (registration_plate,))
+            conn.commit()
 
-    def delete_premium_subscription(self, registration_plate):
-        pass
+    def delete_premium_subscription(self, registration_plate: str) -> None:
+        """
+        Deletes an existing entry from the PremiumCars table
+        PRE : None
+        POST : The entry matching registration_plate is deleted from the PremiumCars table
+        """
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""DELETE
+                                  FROM PremiumCars
+                                  WHERE registration_plate = ?""", (registration_plate,))
+            conn.commit()
 
     def fetch_all_usages(self):
         """Retrieves the complete parking history"""

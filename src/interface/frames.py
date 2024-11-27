@@ -1,5 +1,5 @@
 from tkinter import ttk, IntVar, PhotoImage, StringVar
-from controllers import ParkingController, PaymentsController, SubscribersController, AnalyticsController
+from controllers import ParkingController, PaymentsController, PremiumCarsController, AnalyticsController
 import os
 from tkinter import ttk, PhotoImage
 
@@ -27,7 +27,6 @@ class TitleFrame(ttk.Frame):
     def title(self, title):
         self._title.config(text=title)
 
-
 class BannerFrame(ttk.Frame):
     """Frame used to notify the user about actions registered, or alert about specific events"""
     def __init__(self, parent):
@@ -50,7 +49,7 @@ class SidebarFrame(ttk.Frame):
 
         ttk.Button(self, text="Manage parkings", style="Default.TButton", command=lambda: app.switch_mainframe(ParkingOverviewFrame, ParkingController, "Parking Management")).pack(pady=(4,0))
         ttk.Button(self, text="Manage payments", style="Default.TButton", command=lambda: app.switch_mainframe(PaymentsOverviewFrame, PaymentsController, "Payments Management")).pack(pady=(4,0))
-        ttk.Button(self, text="Manage subscribers", style="Default.TButton", command=lambda: app.switch_mainframe(SubscribersOverviewFrame, SubscribersController, "Subscribers Management")).pack(pady=(4,0))
+        ttk.Button(self, text="Manage subscribers", style="Default.TButton", command=lambda: app.switch_mainframe(PremiumCarsOverviewFrame, PremiumCarsController, "Premium Cars Management")).pack(pady=(4,0))
         ttk.Button(self, text="View analytics", style="Default.TButton", command=lambda: app.switch_mainframe(AnalyticsOverviewFrame, AnalyticsController, "Analytics Visualization")).pack(pady=(4,0))
 
 class MainFrame(ttk.Frame):
@@ -142,11 +141,11 @@ class PaymentsOverviewFrame(MainFrame):
         for i in self.controller.fetch_payments_data():
             ttk.Label(self, text=i, style="Default.TLabel").pack(pady=(1,0))
 
-class SubscribersOverviewFrame(MainFrame):
+class PremiumCarsOverviewFrame(MainFrame):
     """Frame used to manage subscribers"""
     def __init__(self, parent, app, controller):
         super().__init__(parent, app, controller)
-        for i in self.controller.fetch_subscribers_data():
+        for i in self.controller.fetch_premium_cars_data():
             ttk.Label(self, text=i, style="Default.TLabel").pack(pady=(1,0))
 
 class AnalyticsOverviewFrame(MainFrame):
