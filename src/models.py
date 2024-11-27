@@ -48,12 +48,16 @@ class ParkingSpot:
     def enter(self, registration_plate: str):
         """Updates status = "occupied" and linked_car = StandardCar(registration_plate)"""
         assert self.status == "free" # Raises an error if someone is occupying the spot
+        if not isinstance(registration_plate, str):
+            raise TypeError("The enter() method parameter can only be of type str")
         self.status = "occupied"
         self.linked_car = StandardCar(registration_plate)
 
     def exit(self, registration_plate: str):
         """Updates status = "free" and linked_car = None """
         assert (self.status == "occupied") and (self.linked_car.registration_plate == registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
+        if not isinstance(registration_plate, str):
+            raise TypeError("The enter() method parameter can only be of type str")
         self.status = "free"
         self.linked_car = None
 
