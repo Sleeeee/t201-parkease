@@ -39,13 +39,15 @@ class ParkingController:
             self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             return "[Error] This spot already exists"
         except KeyError:
-            db.create_parking_spot(floor_number, row_number, spot_number)
+            id = db.create_parking_spot(floor_number, row_number, spot_number)
+            print(id)
+            self.parking_lot.add_spot({"id": id, "spot_number": spot_number, "row_number": row_number, "floor_number": floor_number})
             return f"[SPOT CREATED] The parking spot at floor {floor_number} - row {row_number} - spot {spot_number} was successfully created"
 
     def delete_spot(self, floor_number: int, row_number: int, spot_number: int) -> str:
         db = DatabaseController()
         try:
-            self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
+            self.parking_lot.remove_spot({"spot_number": spot_number, "row_number": row_number, "floor_number": floor_number}) #Delete spot if it exists, raises KeyError if not 
             db.delete_parking_spot(floor_number, row_number, spot_number)
             return f"[SPOT DELETED] The parking spot at floor {floor_number} - row {row_number} - spot {spot_number} was successfully deleted"
         except KeyError as e:

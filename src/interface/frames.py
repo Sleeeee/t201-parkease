@@ -74,7 +74,8 @@ class ParkingOverviewFrame(MainFrame):
         self.grid_rowconfigure(0, weight=1)
 
         parking_lot = self.controller.parking_lot
-        ttk.Label(column_right, text=str(parking_lot), style="Default.TLabel").pack(pady=(1, 0))
+        self.parking_lot = ttk.Label(column_right, text=str(parking_lot), style="Default.TLabel")
+        self.parking_lot.pack(pady=(1, 0))
 
         """Entry Form, Structure and initialisation"""
         
@@ -122,6 +123,7 @@ class ParkingOverviewFrame(MainFrame):
             self.app.banner_frame.notification = control
         else:
             print("Please, enter an action")
+        self.parking_lot.config(text=self.controller.parking_lot)
 
     def submitCreate(self,floor,row,spot,action):
         if action == "create":
@@ -133,6 +135,7 @@ class ParkingOverviewFrame(MainFrame):
             # TODO : apply color (error messages start with [Error])
         else:
             print("Please, enter an action")
+        self.parking_lot.config(text=self.controller.parking_lot)
 
 class PaymentsOverviewFrame(MainFrame):
     """Frame used to encode or review payments"""
