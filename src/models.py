@@ -46,7 +46,11 @@ class ParkingSpot:
         return string
 
     def enter(self, registration_plate: str):
-        """Updates status = "occupied" and linked_car = StandardCar(registration_plate)"""
+        """
+        PRE : registration_plate est une string identifiant la plaque du véhicule qui rentre dans le spot
+        POST : Change le statut du spot en "occupé" si le spot était libre et attribue une voiture avec sa plaque au spot.
+        RAISES : AssertionError si le spot n'était pas "libre", TypeError si la Registration_plate n'est pas une string.
+        """
         assert self.status == "free" # Raises an error if someone is occupying the spot
         if not isinstance(registration_plate, str):
             raise TypeError("The enter() method parameter can only be of type str")
@@ -54,7 +58,11 @@ class ParkingSpot:
         self.linked_car = StandardCar(registration_plate)
 
     def exit(self, registration_plate: str):
-        """Updates status = "free" and linked_car = None """
+        """
+        PRE : registration_plate est une string identifiant la plaque du véhicule qui sort du spot
+        POST : Change le statut du spot en "libre" si le spot était occupé et désattribue la voiture désignée de ce spot
+        RAISES : AssertionError si le spot n'était pas "occupé" et si la plaque entrée dans les paramètres ne correspond pas à la plaque du véhicule sur le spot, TypeError si la Registration_plate n'est pas une string
+        """
         assert (self.status == "occupied") and (self.linked_car.registration_plate == registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
         if not isinstance(registration_plate, str):
             raise TypeError("The enter() method parameter can only be of type str")
