@@ -1,5 +1,1 @@
-tkinter
-sqlite3
-os
-typing
-unittest
+# No third party dependancies
