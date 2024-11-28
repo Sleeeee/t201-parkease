@@ -139,11 +139,11 @@ class DatabaseController:
                               VALUES (?, ?, ?)""", (usage_id, registration_plate, amount))
             conn.commit()
 
-    def fetch_all_premium_subcriptions(self):
+    def fetch_all_premium_subscriptions(self):
         """
         Fetches all existing premium subscriptions
         PRE : None
-        POST : Returns a list of all the registered car plates
+        POST : Returns a list of one-item lists, each representing a premium car
         """
 
         with sqlite3.connect(self.path) as conn:

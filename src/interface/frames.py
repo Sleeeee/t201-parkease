@@ -148,26 +148,26 @@ class PremiumCarsOverviewFrame(MainFrame):
     """Frame used to manage subscribers"""
     def __init__(self, parent, app, controller):
         super().__init__(parent, app, controller)
-        
+        self.premium_cars = ttk.Label(self, text="\n".join(self.controller.premium_cars), style="Default.TLabel")
+
         plate = StringVar()
         action = StringVar()
 
-        ttk.Label(self,text="Spot", style="Default.TLabel").pack(pady=(1,0))
+        ttk.Label(self,text="Registration plate", style="Default.TLabel").pack(pady=(1,0))
         ttk.Entry(self,textvariable=plate).pack(pady=(1,0))
         ttk.Radiobutton(self,text='Add premium', variable=action, value='add').pack(pady=(3,0))
         ttk.Radiobutton(self,text='Delete premium', variable=action, value='delete',).pack(pady=(3,0))
-        ttk.Button(self,text='Submit', command=lambda: self.submit(int(plate.get()),action.get())).pack(pady=(3,0))
-        for i in self.controller.fetch_premium_cars_data():
-            ttk.Label(self, text=i, style="Default.TLabel").pack(pady=(1,0))
+        ttk.Button(self,text='Submit', command=lambda: self.submit(plate.get(),action.get())).pack(pady=(3,0))
+        self.premium_cars.pack(pady=(1,0))
 
     def submit(self, plate, action):
-        control == ""
+        control = ""
         if action == "add":
-            control = self.controller.new_premium_car()
-        elif action == "del":
-            control = self.controller.delete_premium_subscription
+            control = self.controller.new_premium_car(plate)
+        elif action == "delete":
+            control = self.controller.delete_premium_car(plate)
         self.app.banner_frame.notification = control
-
+        self.premium_cars.config(text="\n".join(self.controller.premium_cars))
 
 class AnalyticsOverviewFrame(MainFrame):
     """Frame used to visualize current or past data about the parking lots and generate reports"""

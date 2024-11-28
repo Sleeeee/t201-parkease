@@ -1,5 +1,5 @@
 from .database_controller import DatabaseController
-from models import ParkingLot, StandardCar
+from models import ParkingLot, PremiumCar, StandardCar
 
 class ParkingController:
     def __init__(self, root):
@@ -18,8 +18,10 @@ class ParkingController:
             
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number] # Fetches the spot from self.parking_lot
             registration_plate, status = self.check_spot_status(id) # Verifies if a car is occupying the spot
-            if registration_plate:
-                spot.linked_car = StandardCar(registration_plate) # Sets the occupant only if it exists
+            if status != "free":
+                # Sets the occupant only if it exists
+                car_class = PremiumCar if db.is_premium(registration_plate) else StandardCar
+                spot.linked_car = car_class(registration_plate)
             spot.status = status
 
     def check_spot_status(self, spot_id: int):
@@ -30,12 +32,13 @@ class ParkingController:
         if spot_usage is None:
             return None, "free" # Spot is free if it was never used
         registration_plate, entry_time, exit_time = spot_usage
-        status = "occupied" if exit_time is None else "free" # If someone entered but never left, it means the spot is occupied. If the last user left, it means the spot is free
+        status = "occupied" if (not exit_time) else "free" # If someone entered but never left, it means the spot is occupied. If the last user left, it means the spot is free
         return registration_plate, status
 
     def create_new_spot(self, floor_number: int, row_number: int, spot_number: int) -> str:
         db = DatabaseController()
         try:
+            # If you can access the spot without error, it means it shouldn't be created
             self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             return "[Error] This spot already exists"
         except KeyError:
@@ -62,7 +65,7 @@ class ParkingController:
         db = DatabaseController()
         try:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
-            spot.enter(registration_plate) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
+            spot.enter(registration_plate, db.is_premium(registration_plate)) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
             db.new_entry_visitor(spot.id, registration_plate) # Creates an entry inside the database
             return f"[NEW ENTRY] Car {registration_plate} was successfully parked at floor {floor_number} - row {row_number} - spot {spot_number}"
         except AssertionError as e:

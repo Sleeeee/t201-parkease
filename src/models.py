@@ -61,10 +61,10 @@ class ParkingSpot:
         string = f"Spot {self.spot_number} : {self.status}"
         if self.status != "free":
             # Adds the registration plate if the spot is occupied or booked
-            string += f" by {self.linked_car.registration_plate}"
+            string += f" by {self.linked_car}"
         return string
 
-    def enter(self, registration_plate: str):
+    def enter(self, registration_plate: str, is_premium: bool):
         """
         PRE : registration_plate est une string identifiant la plaque du véhicule qui rentre dans le spot
         POST : Change le statut du spot en "occupé" si le spot était libre et attribue une voiture avec sa plaque au spot.
@@ -74,7 +74,8 @@ class ParkingSpot:
         if not isinstance(registration_plate, str):
             raise TypeError("The enter() method parameter can only be of type str")
         self.status = "occupied"
-        self.linked_car = StandardCar(registration_plate)
+        car_class = PremiumCar if is_premium else StandardCar
+        self.linked_car = car_class(registration_plate)
 
     def exit(self, registration_plate: str):
         """
@@ -236,9 +237,21 @@ class StandardCar(Car):
     """"""
     HOURLY_RATE = 3.00
 
+    def __init__(self, registration_plate):
+        super().__init__(registration_plate)
+
+    def __str__(self):
+        return f"{self.registration_plate} (standard)"
+
 class PremiumCar(Car):
     """"""
     HOURLY_RATE = 2.0
+
+    def __init__(self, registration_plate):
+        super().__init__(registration_plate)
+
+    def __str__(self):
+        return f"{self.registration_plate} (premium)"
 
 class Payment:
     """"""
