@@ -89,10 +89,10 @@ class ParkingController:
         db = DatabaseController()
         try:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
-            usage_id, time_spent = db.fetch_last_usage_time(spot.id) # Fetches the entry's id and calculates the time spent occupying the spot
-            amount = spot.pay(registration_plate, time_spent) # Calculates the amount to be paid based on the car's HOURLY_RATE
             if self.update_db:
                 # This parameter is set to False when running unit tests
+                usage_id, time_spent = db.fetch_last_usage_time(spot.id) # Fetches the entry's id and calculates the time spent occupying the spot
+                amount = spot.pay(registration_plate, time_spent) # Calculates the amount to be paid based on the car's HOURLY_RATE
                 db.new_payment(usage_id, registration_plate, amount) # Stores the payment inside the database
             spot.exit(registration_plate) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
             if self.update_db:
