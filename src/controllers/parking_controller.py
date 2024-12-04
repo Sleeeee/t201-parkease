@@ -2,8 +2,9 @@ from .database_controller import DatabaseController
 from models import ParkingLot, PremiumCar, StandardCar
 
 class ParkingController:
-    def __init__(self, root):
+    def __init__(self, root=None, update_db: bool = True):
         self.root = root
+        self.update_db = update_db # Set to false when
         self.parking_lot = None
         self.fetch_parking_data() # Updates self.parking_lot with the existing spots
 
@@ -12,6 +13,8 @@ class ParkingController:
            Updates self.parking_lot as a ParkingLot object containing all the spots ordered by floor, row, and number"""
         db = DatabaseController()
         self.parking_lot = ParkingLot(1) # Empty ParkingLot of id 1
+        if not self.update_db:
+            return
         for id, spot_number, row_number, floor_number in db.fetch_all_parking_spots():
             # For every spot found in the database, create the a ParkingSpot object inside its row and floor
             self.parking_lot.add_spot({"id": id, "spot_number": spot_number, "row_number": row_number, "floor_number": floor_number})
@@ -66,14 +69,16 @@ class ParkingController:
         try:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             spot.enter(registration_plate, db.is_premium(registration_plate)) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
-            db.new_entry_visitor(spot.id, registration_plate) # Creates an entry inside the database
+            if self.update_db:
+                # This parameter is set to False when running unit tests
+                db.new_entry_visitor(spot.id, registration_plate) # Creates an entry inside the database
             return f"[NEW ENTRY] Car {registration_plate} was successfully parked at floor {floor_number} - row {row_number} - spot {spot_number}"
-        except AssertionError as e:
+        except AssertionError:
             # Error raised by spot.enter()
-            return f"[Error] This spot is already occupied : {e}"
-        except KeyError as e:
+            return "[Error] This spot is already occupied"
+        except KeyError:
             # Error raised by trying to access a spot that isn't contained inside self.parking_lot
-            return f"[Error] This spot does not exit : {e}"
+            return "[Error] This spot does not exist"
 
     def new_exit(self, floor_number: int, row_number: int, spot_number: int, registration_plate: str) -> str:
         """
@@ -86,16 +91,19 @@ class ParkingController:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
             usage_id, time_spent = db.fetch_last_usage_time(spot.id) # Fetches the entry's id and calculates the time spent occupying the spot
             amount = spot.pay(registration_plate, time_spent) # Calculates the amount to be paid based on the car's HOURLY_RATE
-            db.new_payment(usage_id, registration_plate, amount) # Stores the payment inside the database
+            if self.update_db:
+                # This parameter is set to False when running unit tests
+                db.new_payment(usage_id, registration_plate, amount) # Stores the payment inside the database
             spot.exit(registration_plate) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
-            db.new_exit(spot.id, registration_plate) # Sets the exit time in the database
+            if self.update_db:
+                db.new_exit(spot.id, registration_plate) # Sets the exit time in the database
             return f"[NEW EXIT] Car {registration_plate} was successfully parked out of floor {floor_number} - row {row_number} - spot {spot_number}"
-        except (AssertionError, TypeError) as e:
+        except (AssertionError, TypeError):
             #Error raised by spot.exit()
-            return f"[Error] This spot is unoccupied or the registration plates don't match : {e}"
-        except KeyError as e:
+            return "[Error] This spot is unoccupied or the registration plates don't match"
+        except KeyError:
             # Error raised by trying to access a spot that isn't contained inside self.parking_lot
-            return f"[Error] This spot does not exist : {e}"
+            return "[Error] This spot does not exist"
 
     def get_available_spots(self):
         """
