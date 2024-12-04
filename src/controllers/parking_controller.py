@@ -68,10 +68,13 @@ class ParkingController:
         db = DatabaseController()
         try:
             spot = self.parking_lot.floors[floor_number].rows[row_number].spots[spot_number]
-            spot.enter(registration_plate, db.is_premium(registration_plate)) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
             if self.update_db:
                 # This parameter is set to False when running unit tests
+                spot.enter(registration_plate, db.is_premium(registration_plate)) # Uses ParkingSpot's method to update linked_car and status IF POSSIBLE
                 db.new_entry_visitor(spot.id, registration_plate) # Creates an entry inside the database
+            else:
+                # If running tests
+                spot.enter(registration_plate, False)
             return f"[NEW ENTRY] Car {registration_plate} was successfully parked at floor {floor_number} - row {row_number} - spot {spot_number}"
         except AssertionError:
             # Error raised by spot.enter()
