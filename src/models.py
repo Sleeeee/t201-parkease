@@ -173,11 +173,14 @@ class ParkingLot:
     """"""
     def __init__(self, lot_number: int):
         """
-        PRE : lot_number est un entier
+        PRE : None
         POST : l'objet ParkingLot possède un numéro d'identification
         et un dictionnaire vide contenant les étages
         (qui contiendront les rangées, qui elles contiendront les emplacements)
+        RAISES : ValueError si lot_number n'est pas strictement positif
         """
+        if lot_number <= 0:
+            raise ValueError("lot_number must be positive")
         self._lot_number = lot_number
         self.floors = {}
 
@@ -202,12 +205,23 @@ class ParkingLot:
                Appelle ensuite la méthode add_spot() de l'objet ParkingFloor,
                qui va créer un ParkingRow si besoin.
                À terme, L'objet ParkingSpot est créé dans le ParkingRow correspondant
-        RAISES : KeyError si l'emplacement existe déjà,
+        RAISES : ValueError si l'emplacement existe déjà,
                  TypeError si spot n'est pas un dictionnaire
                  ou ne correspond pas à la description indiquée
         """
-        # TODO : finir la vérification des types et raise l'erreur correspondante
+        keys = spot.keys()
+        if len(keys) > 4:
+            raise TypeError("There are too many keys in the spot dictionary")
+        for key in ("id", "spot_number", "row_number", "floor_number"):
+            if not key in keys:
+                raise TypeError(f"{key} is not in spot")
+            if spot[key] <= 0 and key != "floor_number":
+                raise ValueError(f"{key} must be strictly positive")
         id, spot_number, row_number, floor_number = spot["id"], spot["spot_number"], spot["row_number"], spot["floor_number"] 
+        if (f:= self.floors.get(floor_number)) is not None:
+            if (r:= f.rows.get(row_number)) is not None:
+                if r.spots.get(spot_number) is not None:
+                    raise ValueError("There is already an existing spot at this position")
         if floor_number not in self.floors:
             self.floors[floor_number] = ParkingFloor(floor_number)
         self.floors[floor_number].add_spot({"id": id, 
@@ -218,14 +232,20 @@ class ParkingLot:
         """
         PRE : Spot est un dictionnaire dont les clés sont "spot_number", "row_number", "floor_number", chacune correspondant à un entier
         POST : Supprime l'emplacement spécifié. Supprime également la rangée/l'étage si vide après l'opération
-        RAISES : KeyError si l'emplacement n'existe pas / TypeError si spot n'est pas un dictionnaire ou ne correspond pas à la description indiquée
+        RAISES : ValueError si l'emplacement n'existe pas / TypeError si spot n'est pas un dictionnaire ou ne correspond pas à la description indiquée
         """
+        keys = spot.keys()
+        if len(keys) > 3:
+            raise TypeError("There are too many keys in the spot dictionary")
+        for key in ("spot_number", "row_number", "floor_number"):
+            if not key in keys:
+                raise TypeError(f"{key} is not in spot")
         spot_number, row_number, floor_number = spot["spot_number"], spot["row_number"], spot["floor_number"]
+        if (self.floors.get(floor_number) is None) or (self.floors[floor_number].rows.get(row_number) is None) or (self.floors[floor_number].rows[row_number].spots.get(spot_number) is None):
+            raise ValueError("There is no existing spot at this position")
         self.floors[floor_number].remove_spot({"spot_number": spot_number, "row_number": row_number})
         if not self.floors[floor_number].rows:
             del self.floors[floor_number]
-
-        
 
 class Car:
     """"""
