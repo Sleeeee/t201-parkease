@@ -1,5 +1,7 @@
 import unittest
-from src.models import ParkingLot, ParkingFloor, ParkingRow, ParkingSpot
+from src.models import ParkingLot, ParkingFloor, ParkingRow, ParkingSpot, PremiumCar
+
+
 class TestParkingLot(unittest.TestCase):
     def test_init_positive(self):
         p1, p2 = ParkingLot(2), ParkingLot(5)
@@ -138,6 +140,56 @@ class TestParkingLot(unittest.TestCase):
         self.assertRaises(TypeError, p1.remove_spot, {"row_number": 2, "floor_number": 1})
         self.assertRaises(TypeError, p1.remove_spot, {"spot_number": "1", "row_number": 1, "floor_number": 1, "test": 1})
         self.assertEqual(p1.floors, {})
+
+class TestParkingSpot(unittest.TestCase):
+
+    def test_init(self):
+        s1 = ParkingSpot(1, 2, "free")
+        self.assertEqual(s1.spot_number, 2)
+        self.assertEqual(s1.id, 1)
+        self.assertEqual(s1.status, "free")
+        self.assertEqual(s1.linked_car, None)
+
+
+        s2 = ParkingSpot(2, 3, "occupied")
+        self.assertEqual(s2.spot_number, 3)
+        self.assertEqual(s2.id, 2)
+        self.assertEqual(s2.status, "occupied")
+        self.assertEqual(s2.linked_car, None)
+
+        s3 = ParkingSpot(0, 1, "booked")
+        self.assertEqual(s3.spot_number, 1)
+        self.assertEqual(s3.id, 0)
+        self.assertEqual(s3.status, "booked")
+        self.assertEqual(s3.linked_car, None)
+
+        with self.assertRaises(ValueError):
+            ParkingSpot(1, 2, "test")
+
+    def test_enter(self):
+
+        s2 = ParkingSpot(2, 3, "occupied")
+        with self.assertRaises(AssertionError):
+            s2.enter("abc",True)
+
+
+"""
+        s1 = ParkingSpot(3, 4, "free")
+        c1 = PremiumCar("acd")
+        self.assertEqual(s1.enter("acd",True),s1.status == True)
+
+    def test_exit(self):
+        s1 = ParkingSpot(1, 1, "free")
+        with self.assertRaises(AssertionError):
+"""
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     unittest.main()

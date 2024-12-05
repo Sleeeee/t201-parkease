@@ -68,11 +68,10 @@ class ParkingSpot:
         """
         PRE : registration_plate est une string identifiant la plaque du véhicule qui rentre dans le spot
         POST : Change le statut du spot en "occupé" si le spot était libre et attribue une voiture avec sa plaque au spot.
-        RAISES : AssertionError si le spot n'était pas "libre", TypeError si la Registration_plate n'est pas une string.
+        RAISES : AssertionError si le spot n'était pas "libre"
         """
         assert self.status == "free" # Raises an error if someone is occupying the spot
-        if not isinstance(registration_plate, str):
-            raise TypeError("The enter() method parameter can only be of type str")
+
         self.status = "occupied"
         car_class = PremiumCar if is_premium else StandardCar
         self.linked_car = car_class(registration_plate)
