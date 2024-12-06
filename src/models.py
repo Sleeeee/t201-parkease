@@ -1,5 +1,8 @@
 from typing import Dict
 
+from pip._vendor.rich import status
+
+
 class ParkingSpot:
     """
     A class representing a parking spot.
@@ -26,7 +29,6 @@ class ParkingSpot:
     def __init__(self, id: int,
                  spot_number: int,
                  status: str = "free"):
-                 #booking_id: int = None):
         """"""
         self._id = id
         self._spot_number = spot_number
@@ -66,25 +68,26 @@ class ParkingSpot:
 
     def enter(self, registration_plate: str, is_premium: bool):
         """
-        PRE : registration_plate est une string identifiant la plaque du véhicule qui rentre dans le spot
-        POST : Change le statut du spot en "occupé" si le spot était libre et attribue une voiture avec sa plaque au spot.
-        RAISES : AssertionError si le spot n'était pas "libre"
+        PRE : None
+        POST : Change le statut du spot en "occupé" si le spot était libre et attribue une voiture avec sa plaque au spot. Si la place était boookée, change la booking_plate en None
+        RAISES : AssertionError si le spot n'était pas "libre" et AssertionError si la place était bookée et que la plaque d'immatriculation enregistrée ne correspond pas à la booking_plate
         """
-        assert self.status == "free" # Raises an error if someone is occupying the spot
-
+        if self.status == "booked":
+            assert self.linked_car.registration_plate == registration_plate and is_premium
+        elif self.status == "free":
+            car_class = PremiumCar if is_premium else StandardCar
+            self.linked_car = car_class(registration_plate)
+        else:
+            raise AssertionError("The spot is already occupied")
         self.status = "occupied"
-        car_class = PremiumCar if is_premium else StandardCar
-        self.linked_car = car_class(registration_plate)
 
     def exit(self, registration_plate: str):
         """
-        PRE : registration_plate est une string identifiant la plaque du véhicule qui sort du spot
+        PRE : None
         POST : Change le statut du spot en "libre" si le spot était occupé et désattribue la voiture désignée de ce spot
-        RAISES : AssertionError si le spot n'était pas "occupé" et si la plaque entrée dans les paramètres ne correspond pas à la plaque du véhicule sur le spot, TypeError si la Registration_plate n'est pas une string
+        RAISES : AssertionError si le spot n'était pas "occupé" ou si la plaque entrée dans les paramètres ne correspond pas à la plaque du véhicule sur le spot
         """
         assert (self.status == "occupied") and (self.linked_car.registration_plate == registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
-        if not isinstance(registration_plate, str):
-            raise TypeError("The enter() method parameter can only be of type str")
         self.status = "free"
         self.linked_car = None
 
@@ -93,18 +96,17 @@ class ParkingSpot:
         assert (self.status == "occupied") and (registration_plate == self.linked_car.registration_plate) # Raises an error if the spot isn't occupied or if the plates don't match
         return self.linked_car.HOURLY_RATE * time_spent
 
-    def book(self, registration_plate : str):
-        # WARNING : Not needed for MVP
+    def book(self, registration_plate : str, is_premium: bool):
         """
         Books the parking spot for the client if he is subscribed.
 
-        Updates :
-            - self.status : Set to "booked"
-            - _booking : The id created for the booking
+        PRE : None
+        POST : change le statut du spot en "booké", lui attribue un identifiant de booking, tout ça si le client est premium
+        RAISES : AssertionError si le client n'est pas premium et/ou que la place était occupée, TypeError si la Registration_plate n'est pas une string
         """
+        assert self.status == "free" and is_premium
         self.status = "booked"
-        #self._booking_id = booking_id
-        return registration_plate
+        self.linked_car = PremiumCar(registration_plate)
 
 class ParkingRow:
     """"""

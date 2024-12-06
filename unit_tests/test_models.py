@@ -1,6 +1,5 @@
 import unittest
-from src.models import ParkingLot, ParkingFloor, ParkingRow, ParkingSpot, PremiumCar
-
+from src.models import ParkingLot, ParkingFloor, ParkingRow, ParkingSpot, PremiumCar, StandardCar
 
 class TestParkingLot(unittest.TestCase):
     def test_init_positive(self):
@@ -168,20 +167,96 @@ class TestParkingSpot(unittest.TestCase):
 
     def test_enter(self):
 
+        #test erreur already occupied
         s2 = ParkingSpot(2, 3, "occupied")
         with self.assertRaises(AssertionError):
             s2.enter("abc",True)
 
-
-"""
+        #test normal premium
         s1 = ParkingSpot(3, 4, "free")
-        c1 = PremiumCar("acd")
-        self.assertEqual(s1.enter("acd",True),s1.status == True)
+        s1.enter("acd", True)
+        self.assertEqual(s1.status, "occupied")
+        self.assertEqual(s1.linked_car.registration_plate, "acd")
+        self.assertIsInstance(s1.linked_car, PremiumCar)
+
+        #test normal standard
+        s3 = ParkingSpot(1, 2, "free")
+        s3.enter("bcd", False)
+        self.assertEqual(s3.status, "occupied")
+        self.assertEqual(s3.linked_car.registration_plate, "bcd")
+        self.assertIsInstance(s3.linked_car, StandardCar)
+
+
+        s4 = ParkingSpot(4, 4, "booked")
+        s4.linked_car = PremiumCar("prem")
+
+        #test premium plate not matching
+        with self.assertRaises(AssertionError):
+            s4.enter("acd", True)
+
+        #test premium car but isPremium false
+        with self.assertRaises(AssertionError):
+            s4.enter("prem", False)
+
+        s4.enter("prem", True)
+        self.assertEqual(s4.linked_car.registration_plate, "prem")
+        self.assertEqual(s4.status, "occupied")
 
     def test_exit(self):
         s1 = ParkingSpot(1, 1, "free")
+        s1.linked_car = StandardCar("abc")
         with self.assertRaises(AssertionError):
-"""
+            s1.exit("abc")
+
+        s2 = ParkingSpot(2, 2, "occupied")
+        s2.linked_car = StandardCar("bcd")
+        with self.assertRaises(AssertionError):
+            s2.exit("flckqzdmqd")
+
+        s3 = ParkingSpot(3, 3, "occupied")
+        s3.linked_car = StandardCar("cde")
+        s3.exit("cde")
+        self.assertEqual(s3.status, "free")
+        self.assertEqual(s3.linked_car, None)
+
+    def test_booking(self):
+        s1 = ParkingSpot(1, 1, "occupied")
+        s2 = ParkingSpot(2, 2, "free")
+
+        #test error status occupied
+        with self.assertRaises(AssertionError):
+            s1.book("abc",True)
+
+        #test error is_premium false
+        with self.assertRaises(AssertionError):
+            s2.book("abc",False)
+
+        #working test
+        s2.book("prem", True)
+        self.assertEqual(s2.status, "booked")
+        self.assertEqual(s2.linked_car.registration_plate, "prem")
+    def test_pay(self):
+        s1 = ParkingSpot(1, 1, "free")
+        s2 = ParkingSpot(2, 2, "occupied")
+        s2.linked_car = PremiumCar("prem")
+        #test status error
+        with self.assertRaises(AssertionError):
+            s1.pay("abc",6.0)
+
+        #test wrong plate
+        with self.assertRaises(AssertionError):
+            s2.pay("abc",6.0)
+
+
+        #test normal premium car
+        self.assertEqual(s2.pay("prem",5.0),10.0)
+
+        s3 = ParkingSpot(3, 3, "occupied")
+        s3.linked_car = StandardCar("stand")
+
+        #test normal standard car
+        self.assertEqual(s3.pay("stand",5.0), 15.0)
+
 
 
 
